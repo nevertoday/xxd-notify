@@ -2,6 +2,14 @@
 
 通过 Bark 向 iPhone 发送智能任务提醒的 Codex/Claude Skill。
 
+Bark 是一款自托管推送工具：iPhone 安装 Bark App 后，会为你生成一个专属的推送 Key，xxd-notify 通过 Bark 的 HTTPS 接口发送消息。
+
+相关链接：
+
+- [Bark 官方 GitHub 项目](https://github.com/Finb/Bark)
+- [Bark 官方接口说明](https://github.com/Finb/Bark#send-a-message)
+- [Bark 服务端 API 文档](https://github.com/Finb/Bark/tree/master/Server)
+
 ## 特性
 
 - 只在用户明确要求时发送任务终态提醒
@@ -20,7 +28,7 @@ chmod +x scripts/bark_notify.sh
 
 ## 配置
 
-首次使用前创建本地配置。endpoint 是你的 Bark 地址，绝不要提交它：
+首次使用前，在 iPhone 的 Bark App 中复制你的专属推送 URL。它通常形如 `https://api.day.app/你的Key`；其中最后一段就是 Bark Key。然后把完整 URL 保存到本机配置中，绝不要提交它：
 
 ```bash
 python3 scripts/bark_config.py set endpoint 'https://api.day.app/YOUR_BARK_KEY'
@@ -29,6 +37,8 @@ python3 scripts/bark_config.py show
 ```
 
 默认配置路径为 `~/.config/xxd-notify/config.json`，可用 `XXD_BARK_CONFIG` 覆盖。
+
+如果还没有 Bark：先从 [Bark 官方项目](https://github.com/Finb/Bark)进入 App 获取方式和服务端说明，再回到这里配置 endpoint。不要把真实 Key 填进 README、Issue、截图、命令示例或 Git 历史。
 
 ## 发送测试
 
