@@ -96,8 +96,6 @@ AI 会先执行测试，确认结果后再发送一条提醒。没有这句“�
 
 Bark 是一款自托管推送工具：iPhone 安装 Bark App 后，会为你生成一个专属的推送 Key，xxd-notify 通过 Bark 的 HTTPS 接口发送消息。
 
-Bark 是一款自托管推送工具：iPhone 安装 Bark App 后，会为你生成一个专属的推送 Key，xxd-notify 通过 Bark 的 HTTPS 接口发送消息。
-
 相关链接：
 
 - [Bark 官方 GitHub 项目](https://github.com/Finb/Bark)
