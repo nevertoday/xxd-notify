@@ -1,5 +1,7 @@
 # xxd-notify
 
+![xxd-notify](assets/xxd-notify-banner.jpeg)
+
 我做这个 Skill，起因其实很简单：让 AI 跑测试、处理一批图片，或者执行一次部署时，我不想一直守在电脑前；但我也不想让 AI 自己决定什么时候该打扰我。
 
 所以我把这件事做成了 xxd-notify：你告诉 AI 想在什么时机收到提醒，它就通过 Bark 把进度或结果送到你的 iPhone。
