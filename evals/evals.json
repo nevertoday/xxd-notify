@@ -4,19 +4,43 @@
     {
       "id": 1,
       "prompt": "帮我把项目的测试全部跑完，任务完成后用 Bark 通知我。",
-      "expected_output": "先执行并验证主任务，然后发送一条包含结果、关键指标和下一步的简洁 Bark 通知。",
+      "expected_output": "先执行并验证主任务，再发一条 done（或失败时 fail）通知：标题说清结果，正文第一行是结论，带关键数字和下一步；确认退出码 0 后才说已发送。",
       "files": []
     },
     {
       "id": 2,
       "prompt": "设置一下我的 Bark 提醒，我想修改声音和重要程度。",
-      "expected_output": "读取并隐藏密钥，只询问声音和重要程度，提供可理解的选项和推荐值。",
+      "expected_output": "先 config show（Key 遮蔽）给用户看，只问声音和重要程度，给出选项和推荐值；不要求用户把 Key 贴进对话。",
       "files": []
     },
     {
       "id": 3,
       "prompt": "这个部署如果需要我选域名就 Bark 叫我，不然全部做完再通知。",
-      "expected_output": "只在需用户决策或整个任务完成时提醒，不发送无意义进度通知，且决策提醒包含选项和推荐。",
+      "expected_output": "只在需要选域名时发 decide（选项+推荐+怎么回复），发完停下等回复；顺利时只在最后发一条 done；不发中间进度。",
+      "files": []
+    },
+    {
+      "id": 4,
+      "prompt": "开启 loop 逐个处理 issue，凡是需要我确认或选择的时候（选方案、要花钱、发邮件给真实用户、删数据）就 Bark 通知我。",
+      "expected_output": "把这条当作整个 loop 的常驻规则；遇到清单里的情况发 decide，带 --url 指向方案页、--once 用 issue 号去重，副标题能看出是哪个会话；不替用户选，不每轮重复问是否通知。",
+      "files": []
+    },
+    {
+      "id": 5,
+      "prompt": "这个导出脚本要跑两个小时，跑完推一下我的手机，失败了也告诉我。",
+      "expected_output": "用 notify run --title … -- 命令 包住，而不是自己手写等待和判断；结束按退出码发 done 或 fail，并原样返回退出码。",
+      "files": []
+    },
+    {
+      "id": 6,
+      "prompt": "后台那个批处理（pid 4321，日志在 logs/latest.log）你帮我盯着，卡住或者磁盘不够就提醒我，跑完也说一声。",
+      "expected_output": "用 notify watch --pid 4321 --log logs/latest.log --stall N --disk … --min-free … 放到后台（nohup 或 screen），不手写轮询脚本；告诉用户怎么停掉它。",
+      "files": []
+    },
+    {
+      "id": 7,
+      "prompt": "Bark 好像没收到，你看下之前那条发出去没有。",
+      "expected_output": "运行 notify history 查看送达记录和待补发数量；若有待补发，说明原因（Key/网络）并在修好后 flush；不要声称已送达。",
       "files": []
     }
   ]

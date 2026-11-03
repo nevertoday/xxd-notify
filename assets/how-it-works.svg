@@ -1,0 +1,70 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 936 440" width="936" height="440" role="img" aria-label="xxd-notify 怎么工作：AI 卡在要你拍板的地方，手机才响">
+<title>xxd-notify 怎么工作：AI 卡在要你拍板的地方，手机才响</title>
+<style>
+text{font-family:'PingFang SC','Hiragino Sans GB','Microsoft YaHei','Noto Sans CJK SC','Segoe UI',system-ui,sans-serif;fill:#efe8da}
+.mono{font-family:'SF Mono','JetBrains Mono',Menlo,Consolas,'PingFang SC','Microsoft YaHei',monospace}
+@keyframes l0{0%,2.86%{opacity:0;transform:translateY(4px)}6.07%,95.71%{opacity:1;transform:none}98.93%,100%{opacity:0;transform:none}}.l0{animation:l0 14s infinite both;transform-box:fill-box;transform-origin:center}
+@keyframes l1{0%,10.00%{opacity:0;transform:translateY(4px)}13.21%,95.71%{opacity:1;transform:none}98.93%,100%{opacity:0;transform:none}}.l1{animation:l1 14s infinite both;transform-box:fill-box;transform-origin:center}
+@keyframes l2{0%,18.57%{opacity:0;transform:translateY(4px)}21.79%,95.71%{opacity:1;transform:none}98.93%,100%{opacity:0;transform:none}}.l2{animation:l2 14s infinite both;transform-box:fill-box;transform-origin:center}
+@keyframes l3{0%,22.86%{opacity:0;transform:translateY(4px)}26.07%,57.14%{opacity:1;transform:none}60.36%,100%{opacity:0;transform:none}}.l3{animation:l3 14s infinite both;transform-box:fill-box;transform-origin:center}
+@keyframes l4{0%,58.57%{opacity:0;transform:translateY(4px)}61.79%,95.71%{opacity:1;transform:none}98.93%,100%{opacity:0;transform:none}}.l4{animation:l4 14s infinite both;transform-box:fill-box;transform-origin:center}
+@keyframes l5{0%,67.14%{opacity:0;transform:translateY(4px)}70.36%,95.71%{opacity:1;transform:none}98.93%,100%{opacity:0;transform:none}}.l5{animation:l5 14s infinite both;transform-box:fill-box;transform-origin:center}
+@keyframes blink{0%,22%{opacity:0}23%,26%{opacity:1}27%,30%{opacity:0}31%,34%{opacity:1}35%,38%{opacity:0}39%,42%{opacity:1}43%,46%{opacity:0}47%,50%{opacity:1}51%,54%{opacity:0}55%,57%{opacity:1}58%,100%{opacity:0}}.blink{animation:blink 14s infinite}
+@keyframes n1{0%,28.57%{opacity:0;transform:translateY(-26px) scale(0.96)}32.14%,56.43%{opacity:1;transform:none}60.00%,100%{opacity:0;transform:none}}.n1{animation:n1 14s infinite both;transform-box:fill-box;transform-origin:center}
+@keyframes n2{0%,72.14%{opacity:0;transform:translateY(-26px) scale(0.96)}75.71%,95.71%{opacity:1;transform:none}99.29%,100%{opacity:0;transform:none}}.n2{animation:n2 14s infinite both;transform-box:fill-box;transform-origin:center}
+@keyframes shake{0%,28.6%{transform:none}29.3%{transform:translateX(-4px) rotate(-1deg)}30%{transform:translateX(4px) rotate(1deg)}30.7%{transform:translateX(-3px)}31.4%{transform:translateX(3px)}32.1%,100%{transform:none}}.shake{animation:shake 14s infinite;transform-box:fill-box;transform-origin:center}
+@keyframes tap{0%,54.29%{opacity:0;transform:translateY(0px)}56.43%,60.00%{opacity:1;transform:none}62.14%,100%{opacity:0;transform:none}}.tap{animation:tap 14s infinite both;transform-box:fill-box;transform-origin:center}
+@media (prefers-reduced-motion: reduce){*{animation:none!important}}
+</style>
+<rect width="936" height="440" rx="18" fill="#10151e"/>
+<rect x="28" y="28" width="540" height="262" rx="14" fill="#171e2a" stroke="#2b3546"/>
+<path d="M28 42 a14 14 0 0 1 14 -14 h512 a14 14 0 0 1 14 14 v20 h-540 z" fill="#1e2634"/>
+<circle cx="48" cy="45" r="5" fill="#e8472e" opacity=".85"/>
+<circle cx="66" cy="45" r="5" fill="#f1b43c" opacity=".85"/>
+<circle cx="84" cy="45" r="5" fill="#7cc84a" opacity=".85"/>
+<text x="298.0" y="49.5" font-size="12" fill="#8d95a5" text-anchor="middle">Claude Code · my-app</text>
+<g class="l0"><text class="mono" x="52" y="98" font-size="15" fill="#efe8da">› 处理 issue #42：设置页导出</text></g>
+<g class="l1"><text class="mono" x="52" y="132" font-size="15" fill="#7cc84a">  ✓ 改完 6 个文件，测试 312/312</text></g>
+<g class="l2"><text class="mono" x="52" y="166" font-size="15" fill="#f1b43c" font-weight="700">  ? 导出按钮放哪？A / B / C</text></g>
+<g class="l3"><text class="mono" x="52" y="200" font-size="15" fill="#8d95a5">  ⏸ 等你拍板…</text></g>
+<g class="l4"><text class="mono" x="52" y="200" font-size="15" fill="#efe8da">› A</text></g>
+<g class="l5"><text class="mono" x="52" y="234" font-size="15" fill="#7cc84a">  ✓ 已上线，issue 已关闭</text></g>
+<rect class="blink" x="52" y="198" width="9" height="3" fill="#f1b43c"/>
+<text x="28" y="336" font-size="21" font-weight="700">你去忙你的。<tspan fill="#f1b43c" dx="6">只有 AI 卡在要你拍板的地方，手机才会响。</tspan></text>
+<text x="28" y="366" font-size="14.5" fill="#8d95a5">不用守着终端，也不会被每个小步骤吵到。做完了，它再告诉你一声。</text>
+<g class="shake"><rect x="640" y="22" width="268" height="396" rx="40" fill="#0b0f16" stroke="#3a4558" stroke-width="2"/>
+<rect x="648" y="30" width="252" height="380" rx="33" fill="#141b27"/>
+<rect x="732.0" y="40" width="84" height="22" rx="11" fill="#05070b"/>
+<text x="774.0" y="120" font-size="52" font-weight="300" text-anchor="middle" fill="#efe8da">09:47</text>
+<text x="774.0" y="144" font-size="13" text-anchor="middle" fill="#8d95a5">11月3日 星期二</text>
+<g class="n1"><g transform="translate(656,168)">
+<rect width="236" height="117" rx="16" fill="#252d3b" stroke="#2b3546"/>
+<rect x="12" y="12" width="22" height="22" rx="6" fill="#e8472e"/>
+<path d="M0,-8.5 C-4.6,-8.5 -6.6,-5 -6.6,-1.2 L-6.6,3.6 L-8.6,5.8 L8.6,5.8 L6.6,3.6 L6.6,-1.2 C6.6,-5 4.6,-8.5 0,-8.5 Z M-2.4,7.4 A2.4,2.4 0 0 0 2.4,7.4 Z" transform="translate(23,22.5) scale(.82)" fill="#efe8da"/>
+<text x="42" y="27" font-size="11" fill="#8d95a5" letter-spacing=".5">BARK</text>
+<text x="224" y="27" font-size="11" fill="#8d95a5" text-anchor="end">现在</text>
+<text x="12" y="52" font-size="13.5" font-weight="700">⚠️ #42 要你选方案</text>
+<text x="12" y="69" font-size="11" fill="#f1b43c">my-app</text>
+<text x="12" y="88" font-size="12" fill="#d6d0c4">A 顶栏右侧（推荐）</text>
+<text x="12" y="105" font-size="12" fill="#d6d0c4">B 页面底部</text>
+<text x="12" y="122" font-size="12" fill="#d6d0c4">回终端回复 A/B</text>
+<rect x="12" y="125" width="128" height="20" rx="10" fill="#e8472e" opacity=".18"/><text x="22" y="139" font-size="11" fill="#ff9c86">专注模式下也会亮屏</text>
+</g></g><g class="n2"><g transform="translate(656,168)">
+<rect width="236" height="100" rx="16" fill="#252d3b" stroke="#2b3546"/>
+<rect x="12" y="12" width="22" height="22" rx="6" fill="#e8472e"/>
+<path d="M0,-8.5 C-4.6,-8.5 -6.6,-5 -6.6,-1.2 L-6.6,3.6 L-8.6,5.8 L8.6,5.8 L6.6,3.6 L6.6,-1.2 C6.6,-5 4.6,-8.5 0,-8.5 Z M-2.4,7.4 A2.4,2.4 0 0 0 2.4,7.4 Z" transform="translate(23,22.5) scale(.82)" fill="#efe8da"/>
+<text x="42" y="27" font-size="11" fill="#8d95a5" letter-spacing=".5">BARK</text>
+<text x="224" y="27" font-size="11" fill="#8d95a5" text-anchor="end">现在</text>
+<text x="12" y="52" font-size="13.5" font-weight="700">✅ #42 已上线并关闭</text>
+<text x="12" y="69" font-size="11" fill="#7cc84a">my-app</text>
+<text x="12" y="88" font-size="12" fill="#d6d0c4">6 个文件 · 测试 312/312</text>
+<text x="12" y="105" font-size="12" fill="#d6d0c4">用时 18 分钟</text>
+<rect x="12" y="108" width="68" height="20" rx="10" fill="#7cc84a" opacity=".16"/><text x="22" y="122" font-size="11" fill="#7cc84a">普通提醒</text>
+</g></g>
+<rect x="724.0" y="396" width="100" height="4" rx="2" fill="#3a4558"/></g>
+<path d="M562 161 C608 91, 600 172, 644 212" fill="none" stroke="#f1b43c" stroke-width="1.5" stroke-dasharray="3 6" opacity=".35"/>
+<circle r="5.0" fill="#f1b43c"><animateMotion dur="14s" repeatCount="indefinite" path="M562 161 C608 91, 600 172, 644 212" calcMode="linear" keyPoints="0;0;1;1" keyTimes="0;0.2286;0.2857;1"/><animate attributeName="opacity" dur="14s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.2286;0.2321;0.2821;0.2857;1"/></circle>
+<circle r="3.9" fill="#f1b43c"><animateMotion dur="14s" repeatCount="indefinite" path="M562 161 C608 91, 600 172, 644 212" calcMode="linear" keyPoints="0;0;1;1" keyTimes="0;0.2414;0.2986;1"/><animate attributeName="opacity" dur="14s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.2414;0.2450;0.2950;0.2986;1"/></circle>
+<circle r="2.8" fill="#f1b43c"><animateMotion dur="14s" repeatCount="indefinite" path="M562 161 C608 91, 600 172, 644 212" calcMode="linear" keyPoints="0;0;1;1" keyTimes="0;0.2543;0.3114;1"/><animate attributeName="opacity" dur="14s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.2543;0.2579;0.3079;0.3114;1"/></circle>
+<g class="tap"><circle cx="774.0" cy="226.5" r="26" fill="#efe8da" opacity=".16"/><circle cx="774.0" cy="226.5" r="12" fill="#efe8da" opacity=".35"/></g>
+</svg>

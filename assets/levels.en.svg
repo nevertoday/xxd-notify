@@ -1,0 +1,85 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 936 392" width="936" height="392" role="img" aria-label="Different moments, different volume">
+<title>Different moments, different volume</title>
+<style>
+text{font-family:'PingFang SC','Hiragino Sans GB','Microsoft YaHei','Noto Sans CJK SC','Segoe UI',system-ui,sans-serif;fill:#efe8da}
+.mono{font-family:'SF Mono','JetBrains Mono',Menlo,Consolas,'PingFang SC','Microsoft YaHei',monospace}
+@keyframes ring{0%{transform:scale(1);opacity:.55}60%,100%{transform:scale(2.3);opacity:0}}.ring{animation:ring 1.8s infinite ease-out;transform-box:fill-box;transform-origin:center}.ring2{animation-delay:.6s}
+@keyframes b00{0%,5.0%{opacity:.15}7.5%,88%{opacity:1}96%,100%{opacity:.15}}.b00{animation:b00 6s infinite}
+@keyframes b01{0%,7.0%{opacity:.15}9.5%,88%{opacity:1}96%,100%{opacity:.15}}.b01{animation:b01 6s infinite}
+@keyframes b02{0%,9.0%{opacity:.15}11.5%,88%{opacity:1}96%,100%{opacity:.15}}.b02{animation:b02 6s infinite}
+@keyframes b03{0%,11.0%{opacity:.15}13.5%,88%{opacity:1}96%,100%{opacity:.15}}.b03{animation:b03 6s infinite}
+@keyframes b04{0%,13.0%{opacity:.15}15.5%,88%{opacity:1}96%,100%{opacity:.15}}.b04{animation:b04 6s infinite}
+@keyframes b10{0%,5.0%{opacity:.15}7.5%,88%{opacity:1}96%,100%{opacity:.15}}.b10{animation:b10 6s infinite}
+@keyframes b11{0%,7.0%{opacity:.15}9.5%,88%{opacity:1}96%,100%{opacity:.15}}.b11{animation:b11 6s infinite}
+@keyframes b12{0%,9.0%{opacity:.15}11.5%,88%{opacity:1}96%,100%{opacity:.15}}.b12{animation:b12 6s infinite}
+@keyframes b13{0%,11.0%{opacity:.15}13.5%,88%{opacity:1}96%,100%{opacity:.15}}.b13{animation:b13 6s infinite}
+@keyframes b14{0%,13.0%{opacity:.15}15.5%,88%{opacity:1}96%,100%{opacity:.15}}.b14{animation:b14 6s infinite}
+@keyframes b20{0%,5.0%{opacity:.15}7.5%,88%{opacity:1}96%,100%{opacity:.15}}.b20{animation:b20 6s infinite}
+@keyframes b21{0%,7.0%{opacity:.15}9.5%,88%{opacity:1}96%,100%{opacity:.15}}.b21{animation:b21 6s infinite}
+@keyframes b22{0%,9.0%{opacity:.15}11.5%,88%{opacity:1}96%,100%{opacity:.15}}.b22{animation:b22 6s infinite}
+@keyframes b30{0%,5.0%{opacity:.15}7.5%,88%{opacity:1}96%,100%{opacity:.15}}.b30{animation:b30 6s infinite}
+@keyframes b31{0%,7.0%{opacity:.15}9.5%,88%{opacity:1}96%,100%{opacity:.15}}.b31{animation:b31 6s infinite}
+@keyframes b32{0%,9.0%{opacity:.15}11.5%,88%{opacity:1}96%,100%{opacity:.15}}.b32{animation:b32 6s infinite}
+@media (prefers-reduced-motion: reduce){*{animation:none!important}}
+</style>
+<rect width="936" height="392" rx="18" fill="#10151e"/>
+<text x="32" y="46" font-size="22" font-weight="700">Different moments, different volume</text>
+<text x="904" y="46" font-size="13" fill="#8d95a5" text-anchor="end">How loud</text>
+<rect x="24" y="72" width="888" height="52" rx="12" fill="#171e2a" stroke="#2b3546"/>
+<circle class="ring" cx="54" cy="98" r="13" fill="none" stroke="#e8472e" stroke-width="2"/>
+<circle class="ring ring2" cx="54" cy="98" r="13" fill="none" stroke="#e8472e" stroke-width="2"/>
+<circle cx="54" cy="98" r="13" fill="#e8472e" opacity="1"/>
+<text x="54" y="103" font-size="15" font-weight="800" text-anchor="middle" fill="#10151e">!</text>
+<text x="84" y="104" font-size="16" font-weight="700" fill="#efe8da">Needs your call</text>
+<text x="262" y="104" font-size="13.5" fill="#8d95a5">pick a plan · spend money · email users · delete · log in</text>
+<rect class="b00" x="668" y="102" width="8" height="8" rx="2" fill="#e8472e"/>
+<rect class="b01" x="681" y="98" width="8" height="12" rx="2" fill="#e8472e"/>
+<rect class="b02" x="694" y="94" width="8" height="16" rx="2" fill="#e8472e"/>
+<rect class="b03" x="707" y="90" width="8" height="20" rx="2" fill="#e8472e"/>
+<rect class="b04" x="720" y="86" width="8" height="24" rx="2" fill="#e8472e"/>
+<text x="904" y="103" font-size="12.5" text-anchor="end" fill="#e8472e">breaks through Focus</text>
+<rect x="24" y="134" width="888" height="52" rx="12" fill="#171e2a" stroke="#2b3546"/>
+<circle cx="54" cy="160" r="13" fill="#e8472e" opacity="1"/>
+<text x="54" y="165" font-size="15" font-weight="800" text-anchor="middle" fill="#10151e">✕</text>
+<text x="84" y="166" font-size="16" font-weight="700" fill="#efe8da">Failed / stopped</text>
+<text x="262" y="166" font-size="13.5" fill="#8d95a5">can't fix it alone, quota ran out, had to pause</text>
+<rect class="b10" x="668" y="164" width="8" height="8" rx="2" fill="#e8472e"/>
+<rect class="b11" x="681" y="160" width="8" height="12" rx="2" fill="#e8472e"/>
+<rect class="b12" x="694" y="156" width="8" height="16" rx="2" fill="#e8472e"/>
+<rect class="b13" x="707" y="152" width="8" height="20" rx="2" fill="#e8472e"/>
+<rect class="b14" x="720" y="148" width="8" height="24" rx="2" fill="#e8472e"/>
+<text x="904" y="165" font-size="12.5" text-anchor="end" fill="#e8472e">breaks through Focus</text>
+<rect x="24" y="196" width="888" height="52" rx="12" fill="#171e2a" stroke="#2b3546"/>
+<circle cx="54" cy="222" r="13" fill="#7cc84a" opacity="1"/>
+<text x="54" y="227" font-size="15" font-weight="800" text-anchor="middle" fill="#10151e">✓</text>
+<text x="84" y="228" font-size="16" font-weight="700" fill="#efe8da">Done</text>
+<text x="262" y="228" font-size="13.5" fill="#8d95a5">the whole job, verified</text>
+<rect class="b20" x="668" y="226" width="8" height="8" rx="2" fill="#7cc84a"/>
+<rect class="b21" x="681" y="222" width="8" height="12" rx="2" fill="#7cc84a"/>
+<rect class="b22" x="694" y="218" width="8" height="16" rx="2" fill="#7cc84a"/>
+<rect class="" x="707" y="214" width="8" height="20" rx="2" fill="#2b3546"/>
+<rect class="" x="720" y="210" width="8" height="24" rx="2" fill="#2b3546"/>
+<text x="904" y="227" font-size="12.5" text-anchor="end" fill="#7cc84a">regular alert</text>
+<rect x="24" y="258" width="888" height="52" rx="12" fill="#171e2a" stroke="#2b3546"/>
+<circle cx="54" cy="284" r="13" fill="#f1b43c" opacity="1"/>
+<text x="54" y="289" font-size="15" font-weight="800" text-anchor="middle" fill="#10151e">▶</text>
+<text x="84" y="290" font-size="16" font-weight="700" fill="#efe8da">Your milestones</text>
+<text x="262" y="290" font-size="13.5" fill="#8d95a5">every 20%, each stage — only on request</text>
+<rect class="b30" x="668" y="288" width="8" height="8" rx="2" fill="#f1b43c"/>
+<rect class="b31" x="681" y="284" width="8" height="12" rx="2" fill="#f1b43c"/>
+<rect class="b32" x="694" y="280" width="8" height="16" rx="2" fill="#f1b43c"/>
+<rect class="" x="707" y="276" width="8" height="20" rx="2" fill="#2b3546"/>
+<rect class="" x="720" y="272" width="8" height="24" rx="2" fill="#2b3546"/>
+<text x="904" y="289" font-size="12.5" text-anchor="end" fill="#f1b43c">regular alert</text>
+<rect x="24" y="320" width="888" height="52" rx="12" fill="#10151e" stroke="#2b3546" stroke-dasharray="4 5"/>
+<circle cx="54" cy="346" r="13" fill="#5c6577" opacity=".25"/>
+<text x="54" y="351" font-size="15" font-weight="800" text-anchor="middle" fill="#8d95a5">·</text>
+<text x="84" y="352" font-size="16" font-weight="700" fill="#8d95a5">Every other step</text>
+<text x="262" y="352" font-size="13.5" fill="#8d95a5">reading files, running commands, editing…</text>
+<rect class="" x="668" y="350" width="8" height="8" rx="2" fill="#2b3546"/>
+<rect class="" x="681" y="346" width="8" height="12" rx="2" fill="#2b3546"/>
+<rect class="" x="694" y="342" width="8" height="16" rx="2" fill="#2b3546"/>
+<rect class="" x="707" y="338" width="8" height="20" rx="2" fill="#2b3546"/>
+<rect class="" x="720" y="334" width="8" height="24" rx="2" fill="#2b3546"/>
+<text x="904" y="351" font-size="12.5" text-anchor="end" fill="#8d95a5">silent</text>
+</svg>
