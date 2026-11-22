@@ -1,8 +1,12 @@
 """Run: python3 -m unittest discover -s tests
 
-Talks to a fake Bark server on 127.0.0.1; never touches your real config or phone."""
+Talks to fake Bark and AIHOT servers on 127.0.0.1; never touches your real config or phone."""
+import gzip
+import hashlib
 import json
 import os
+import plistlib
+import re
 import subprocess
 import sys
 import tempfile
@@ -38,25 +42,80 @@ class FakeBark(BaseHTTPRequestHandler):
         pass
 
 
+class FakeAihot(BaseHTTPRequestHandler):
+    feeds = {}       # product -> list of events, or an HTTP status / raw bytes to fail with
+    log = []         # one dict per request answered
+
+    def do_GET(self):
+        match = re.fullmatch(r"/api/v1/(.+)-resets/recent", self.path)
+        product = match.group(1) if match else None
+        feed = FakeAihot.feeds.get(product, [])
+        etag, raw, status = None, b"", 200
+        if isinstance(feed, int):
+            status = feed
+        elif isinstance(feed, bytes):
+            raw = feed
+        else:
+            raw = json.dumps({"schemaVersion": 1, "count": len(feed), "events": feed}).encode()
+            etag = f'W/"v1-{product}-resets-recent-{hashlib.sha1(raw).hexdigest()[:16]}"'
+            if self.headers.get("If-None-Match") == etag:
+                status, raw = 304, b""
+        FakeAihot.log.append({"product": product, "status": status, "ua": self.headers.get("User-Agent")})
+        gzipped = bool(raw) and "gzip" in self.headers.get("Accept-Encoding", "")
+        if gzipped:
+            raw = gzip.compress(raw)
+        self.send_response(status)
+        if etag:
+            self.send_header("ETag", etag)
+        if gzipped:
+            self.send_header("Content-Encoding", "gzip")
+        if status == 429:
+            self.send_header("Retry-After", "60")
+        self.send_header("Content-Length", str(len(raw)))
+        self.end_headers()
+        self.wfile.write(raw)
+
+    def log_message(self, *args):
+        pass
+
+
+def reset_event(event_id, status, post="Claude 的周额度会在今天重置"):
+    done = status == "confirmed"
+    return {
+        "id": event_id, "status": "confirmed" if done else "announced", "title": f"Claude 额度重置 {status}",
+        "presentation": {"status": status, "audienceZh": "所有付费用户", "productsZh": "Claude Code"},
+        "estimate": None if done else {"label": "北京时间 11月22日 07:00–10:00", "basis": "model"},
+        "schedule": None, "confirmedAt": "2026-11-21T17:18:53.000+08:00" if done else None,
+        "posts": [{"stage": "预告", "text": post}], "url": "https://aihot.news/claude-reset",
+    }
+
+
 class NotifyTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.server = ThreadingHTTPServer(("127.0.0.1", 0), FakeBark)
         threading.Thread(target=cls.server.serve_forever, daemon=True).start()
         cls.endpoint = f"http://127.0.0.1:{cls.server.server_port}/TESTKEY1234567890"
+        cls.aihot = ThreadingHTTPServer(("127.0.0.1", 0), FakeAihot)
+        threading.Thread(target=cls.aihot.serve_forever, daemon=True).start()
 
     @classmethod
     def tearDownClass(cls):
         cls.server.shutdown()
+        cls.aihot.shutdown()
 
     def setUp(self):
         FakeBark.plan, FakeBark.received = [], []
+        FakeAihot.feeds, FakeAihot.log = {}, []
         self.tmp = tempfile.TemporaryDirectory()
         self.config = Path(self.tmp.name) / "config.json"
         self.config.write_text(json.dumps({"endpoint": self.endpoint, "sound": "birdsong",
                                            "group": "AI 任务", "level": "active"}))
         self.env = dict(os.environ, XXD_BARK_CONFIG=str(self.config), XXD_NOTIFY_RETRY_DELAYS="0,0,0",
-                        XXD_NOTIFY_NO_DESKTOP="1", XXD_NOTIFY_SOURCE="demo-project", LANG="en_US.UTF-8")
+                        XXD_NOTIFY_NO_DESKTOP="1", XXD_NOTIFY_SOURCE="demo-project", LANG="en_US.UTF-8",
+                        XXD_RESETS_BASE=f"http://127.0.0.1:{self.aihot.server_port}", TZ="America/Los_Angeles",
+                        XXD_LAUNCH_AGENTS_DIR=str(Path(self.tmp.name) / "LaunchAgents"),
+                        XXD_NOTIFY_NO_LAUNCHCTL="1")
         self.env.pop("XXD_BARK_ENDPOINT", None)
 
     def tearDown(self):
@@ -216,6 +275,107 @@ class NotifyTest(unittest.TestCase):
         out = self.run_cli("history")
         self.assertIn("✓ 已送达", out.stdout)
         self.assertIn("✅ 一", out.stdout)
+
+    # --- AI quota resets (AIHOT)
+    def resets(self, *args):
+        return self.run_cli("resets", "check", *args)
+
+    def test_resets_first_check_skips_past_resets_but_pushes_pending(self):
+        FakeAihot.feeds = {"antigravity": [reset_event("old", "confirmed")],
+                           "claude": [reset_event("next", "announced")]}
+        out = self.resets()
+        self.assertEqual(out.returncode, 0, out.stderr)
+        self.assertEqual(len(FakeBark.received), 1)
+        msg = FakeBark.received[0]
+        self.assertEqual(msg["title"], "🔄 Claude 要重置额度了")
+        self.assertEqual(msg["body"], "预计 北京时间 11月22日 07:00–10:00\n适用：所有付费用户 · Claude Code\n"
+                                      "Claude 的周额度会在今天重置")
+        self.assertEqual((msg["subtitle"], msg["group"], msg["url"], msg["level"]),
+                         ("AIHOT · Claude", "额度重置", "https://aihot.news/claude-reset", "active"))
+        self.assertEqual({r["ua"] for r in FakeAihot.log}, {"xxd-notify"})
+
+    def test_resets_announced_then_confirmed_pushes_twice(self):
+        FakeAihot.feeds = {"claude": [reset_event("r1", "announced")]}
+        self.resets("--only", "claude")
+        FakeAihot.feeds = {"claude": [reset_event("r1", "in_progress", post="正在分批重置")]}
+        self.resets("--only", "claude")
+        FakeAihot.feeds = {"claude": [reset_event("r1", "confirmed", post="已经全部重置")]}
+        out = self.resets("--only", "claude")
+        self.assertEqual(out.returncode, 0, out.stderr)
+        self.assertEqual([r["title"] for r in FakeBark.received], ["🔄 Claude 要重置额度了", "🔄 Claude 额度已重置"])
+        self.assertTrue(FakeBark.received[1]["body"].startswith("确认于 11/21 17:18\n"))
+
+    def test_resets_landing_between_checks_pushes(self):
+        self.resets("--only", "claude")
+        FakeAihot.feeds = {"claude": [reset_event("r1", "confirmed")]}
+        self.resets("--only", "claude")
+        self.assertEqual([r["title"] for r in FakeBark.received], ["🔄 Claude 额度已重置"])
+
+    def test_resets_unchanged_feed_is_a_304_and_pushes_nothing(self):
+        FakeAihot.feeds = {"claude": [reset_event("r1", "announced")]}
+        self.resets("--only", "claude")
+        out = self.resets("--only", "claude")
+        self.assertEqual(out.returncode, 0, out.stderr)
+        self.assertEqual([r["status"] for r in FakeAihot.log], [200, 304])
+        self.assertEqual(len(FakeBark.received), 1)
+
+    def test_resets_likely_completed_does_not_push(self):
+        FakeAihot.feeds = {"claude": [reset_event("r1", "announced")]}
+        self.resets("--only", "claude")
+        FakeAihot.feeds = {"claude": [reset_event("r1", "likely_completed"), reset_event("r2", "expired_unconfirmed")]}
+        self.resets("--only", "claude")
+        self.assertEqual([r["title"] for r in FakeBark.received], ["🔄 Claude 要重置额度了"])
+
+    def test_resets_lost_state_does_not_push_again(self):
+        FakeAihot.feeds = {"claude": [reset_event("r1", "announced")]}
+        self.resets("--only", "claude")
+        (Path(self.tmp.name) / "resets.json").unlink()
+        FakeAihot.feeds = {"claude": [reset_event("r1", "announced", post="补充：大约两小时后")]}
+        out = self.resets("--only", "claude")
+        self.assertEqual(out.returncode, 0, out.stderr)
+        self.assertEqual(len(FakeBark.received), 1)
+
+    def test_resets_one_feed_down_still_checks_the_rest(self):
+        FakeAihot.feeds = {"claude": 429, "codex": b"<html>busy</html>", "antigravity": [reset_event("r1", "announced")]}
+        out = self.resets("--only", "claude,codex,antigravity")
+        self.assertEqual(out.returncode, 0, out.stderr)
+        self.assertEqual([r["title"] for r in FakeBark.received], ["🔄 Antigravity 要重置额度了"])
+        self.assertIn("Claude", out.stderr)
+        self.assertIn("Codex", out.stderr)
+
+    def test_resets_every_feed_down_is_exit_5_and_silent(self):
+        FakeAihot.feeds = {"claude": 503, "codex": b"not json"}
+        out = self.resets("--only", "claude,codex")
+        self.assertEqual(out.returncode, xxd_notify.EXIT_NETWORK)
+        self.assertEqual(FakeBark.received, [])
+
+    def test_resets_unknown_product(self):
+        out = self.resets("--only", "bogus")
+        self.assertEqual(out.returncode, xxd_notify.EXIT_USAGE)
+        self.assertEqual(FakeAihot.log, [])
+
+    def test_resets_dry_run_sends_and_saves_nothing(self):
+        FakeAihot.feeds = {"claude": [reset_event("r1", "announced")]}
+        out = self.resets("--only", "claude", "--dry-run")
+        self.assertEqual(out.returncode, 0, out.stderr)
+        self.assertIn("会推送：🔄 Claude 要重置额度了", out.stdout)
+        self.assertEqual(FakeBark.received, [])
+        self.assertFalse((Path(self.tmp.name) / "resets.json").exists())
+
+    @unittest.skipUnless(sys.platform == "darwin", "launchd is macOS only")
+    def test_resets_install_and_uninstall(self):
+        plist = Path(self.env["XXD_LAUNCH_AGENTS_DIR"]) / "com.xxd-notify.resets.plist"
+        self.run_cli("resets", "install", "--only", "codex")
+        out = self.run_cli("resets", "install", "--only", "claude")
+        self.assertEqual(out.returncode, 0, out.stderr)
+        self.assertIn("resets uninstall", out.stdout)
+        agent = plistlib.loads(plist.read_bytes())
+        self.assertEqual(agent["ProgramArguments"][-4:], ["resets", "check", "--only", "claude"])
+        self.assertEqual((agent["StartInterval"], agent["RunAtLoad"]), (600, True))
+        out = self.run_cli("resets", "uninstall")
+        self.assertEqual(out.returncode, 0, out.stderr)
+        self.assertFalse(plist.exists())
+        self.assertEqual(self.run_cli("resets", "uninstall").returncode, 0)
 
 
 if __name__ == "__main__":

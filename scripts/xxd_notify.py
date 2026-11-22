@@ -10,15 +10,20 @@ Standard library only. Subcommands:
   config   show | set FIELD VALUE | unset FIELD | reset | path
   flush    resend notifications that could not be delivered earlier
   history  the last notifications and whether they arrived
+  resets   push when Codex / Antigravity / Claude / Grok Bot announce or finish a quota reset
+           (AIHOT's public API): check | install | uninstall
 """
 import argparse
 import collections
 import contextlib
 import datetime as dt
 import getpass
+import gzip
+import http.client
 import ipaddress
 import json
 import os
+import plistlib
 import re
 import shlex
 import shutil
@@ -28,6 +33,7 @@ import sys
 import time
 import urllib.error
 import urllib.request
+import zlib
 from pathlib import Path
 from urllib.parse import urlsplit, urlunsplit
 
@@ -54,11 +60,12 @@ STATUS = {
     "done": ("✅", "active"),
     "progress": ("▶️", "active"),         # a milestone the user asked for
     "test": ("🧪", "active"),
+    "reset": ("🔄", "active"),            # an AI quota reset (resets subcommand)
 }
 ALIASES = {"cancel": "stop", "pause": "stop", "start": "progress", "stage": "progress",
            "milestone": "progress", "ok": "done", "error": "fail", "confirm": "decide"}
 EMOJI_STATUS = [("⚠", "decide"), ("❌", "fail"), ("⏹", "stop"), ("✅", "done"),
-                ("▶", "progress"), ("🧪", "test")]
+                ("▶", "progress"), ("🧪", "test"), ("🔄", "reset")]
 
 EXIT_USAGE, EXIT_NO_CONFIG, EXIT_REJECTED, EXIT_NETWORK = 2, 3, 4, 5
 TITLE_MAX_BYTES, BODY_MAX_BYTES = 240, 2400   # APNs payloads top out around 4 KB
@@ -362,7 +369,7 @@ def dedup_check(payload, once, window_minutes, force):
         except json.JSONDecodeError:
             seen = {}
         t = time.time()
-        seen = {k: v for k, v in seen.items() if t - v < 86400 * 2}
+        seen = {k: v for k, v in seen.items() if t - v < 86400 * 8}   # longest --once window: resets use 7 days
         auto_key = "auto:" + json.dumps([payload.get("title"), payload.get("body"), payload.get("subtitle")],
                                         ensure_ascii=False)
         keys = [(auto_key, AUTO_DEDUP_SECONDS)]
@@ -714,6 +721,231 @@ def cmd_history(args):
     return 0
 
 
+# ---------------------------------------------------------------- AI quota resets (AIHOT)
+
+RESETS_BASE = os.environ.get("XXD_RESETS_BASE", "https://aihot.news").rstrip("/")
+RESET_PRODUCTS = {
+    slug: {"name": name, "api": f"/api/v1/{slug}-resets/recent", "page": f"https://aihot.news/{slug}-reset"}
+    for slug, name in (("codex", "Codex"), ("antigravity", "Antigravity"), ("claude", "Claude"),
+                       ("grok-bot", "Grok Bot"))
+}
+# presentation.status -> (rank, title). An event pushes only when its rank rises, so rank 0 never pushes
+# and never lowers what was already reached. Unknown statuses count as rank 0.
+RESET_STAGES = {
+    "announced": (1, "{name} 要重置额度了"),
+    "in_progress": (1, "{name} 正在重置额度"),
+    "confirmed": (2, "{name} 额度已重置"),
+    "likely_completed": (0, None),       # hours past the estimate, still no confirmation post
+    "expired_unconfirmed": (0, None),
+}
+RESET_PENDING = 1
+RESETS_STATE = STATE_DIR / "resets.json"
+RESETS_LOG = STATE_DIR / "resets.log"
+RESETS_MIN_INTERVAL = 300                # AIHOT refreshes every 10 minutes; faster polls re-read its cache
+LAUNCH_LABEL = "com.xxd-notify.resets"
+LAUNCH_AGENT = Path(os.environ.get("XXD_LAUNCH_AGENTS_DIR", "~/Library/LaunchAgents")).expanduser() \
+    / f"{LAUNCH_LABEL}.plist"
+
+
+def fetch_resets(url, etag=None):
+    """One GET of a /recent feed. Returns (etag, events); events is None when unchanged (304).
+    Anything else (HTTP error, 429, timeout, a body that is not the feed) raises ConnectionError."""
+    headers = {"User-Agent": "xxd-notify", "Accept": "application/json", "Accept-Encoding": "gzip"}
+    if etag:
+        headers["If-None-Match"] = etag
+    try:
+        with urllib.request.urlopen(urllib.request.Request(url, headers=headers), timeout=20) as response:
+            raw = response.read()
+            if response.headers.get("Content-Encoding", "").lower() == "gzip":
+                raw = gzip.decompress(raw)
+            etag, data = response.headers.get("ETag"), json.loads(raw)
+    except urllib.error.HTTPError as exc:
+        if exc.code == 304:
+            return etag, None
+        wait = exc.headers.get("Retry-After") if exc.headers else None
+        raise ConnectionError(f"HTTP {exc.code}" + (f"，要求 {wait} 秒后再来" if wait else "")) from exc
+    except (OSError, EOFError, ValueError, zlib.error, http.client.HTTPException) as exc:
+        raise ConnectionError(str(getattr(exc, "reason", None) or exc)) from exc
+    events = data.get("events") if isinstance(data, dict) else None
+    if not isinstance(events, list):
+        raise ConnectionError("回应里没有 events，不像额度重置数据")
+    return etag, [e for e in events if isinstance(e, dict) and isinstance(e.get("id"), str)]
+
+
+def load_reset_state():
+    """{product: {"etag": str|None, "seen": {event_id: rank}}}. Unreadable counts as never checked."""
+    try:
+        state = json.loads(RESETS_STATE.read_text(encoding="utf-8"))
+    except (FileNotFoundError, json.JSONDecodeError):
+        return {}
+    if not isinstance(state, dict):
+        return {}
+    return {k: v for k, v in state.items() if isinstance(v, dict) and isinstance(v.get("seen"), dict)}
+
+
+def reset_status(event):
+    return (event.get("presentation") or {}).get("status") or event.get("status")
+
+
+def plan_resets(name, events, known):
+    """What one fresh feed answer pushes. known = {event_id: rank} from the last answer, or None before
+    the first one: then resets that already happened are only recorded, and only pending ones push.
+    Returns (pushes, seen); seen holds exactly this answer's events."""
+    pushes, seen = [], {}
+    for event in events:
+        rank, title = RESET_STAGES.get(reset_status(event), (0, None))
+        before = (known or {}).get(event["id"], 0)
+        if rank > before and (known is not None or rank == RESET_PENDING):
+            pushes.append((event, rank, title.format(name=name)))
+        seen[event["id"]] = max(before, rank)
+    return pushes, seen
+
+
+def aihot_time(value):
+    """Kept in the timestamp's own offset (+08:00): AIHOT's labels all say 北京时间."""
+    with contextlib.suppress(AttributeError, TypeError, ValueError):
+        return dt.datetime.fromisoformat(value.replace("Z", "+00:00"))
+    return None
+
+
+def reset_body(event, rank):
+    """Up to three lines: when, who it applies to, the newest source post."""
+    lines = []
+    if rank == RESET_PENDING:
+        label = (event.get("estimate") or {}).get("label") or (event.get("schedule") or {}).get("label")
+        if label:
+            lines.append(label if "预计" in label else f"预计 {label}")
+    else:
+        confirmed = aihot_time(event.get("confirmedAt"))
+        if confirmed:
+            lines.append(f"确认于 {confirmed:%m/%d %H:%M}")
+    presentation = event.get("presentation") or {}
+    scope = " · ".join(x for x in (presentation.get("audienceZh"), presentation.get("productsZh")) if x)
+    if scope:
+        lines.append(f"适用：{scope}")
+    posts = event.get("posts") or []
+    post = " ".join(str(posts[0].get("text") or "").split()) if posts else ""
+    if post:
+        lines.append(post if len(post) <= 120 else post[:119] + "…")
+    return "\n".join(lines) or "打开 AIHOT 看详情"
+
+
+def check_resets(products, dry_run=False):
+    """Poll each feed once and push what changed. EXIT_NETWORK only when every feed failed."""
+    state = load_reset_state()
+    failed = 0
+    for product in products:
+        info = RESET_PRODUCTS[product]
+        entry = state.get(product)
+        etag = entry.get("etag") if entry and not dry_run else None   # dry-run always shows the full state
+        try:
+            etag, events = fetch_resets(RESETS_BASE + info["api"], etag)
+        except ConnectionError as exc:
+            say(f"xxd-notify: {info['name']} 的额度重置数据没取到：{exc}")
+            failed += 1
+            continue
+        if events is None:
+            continue
+        pushes, seen = plan_resets(info["name"], events, entry["seen"] if entry else None)
+        if dry_run:
+            print(f"{info['name']}：近期 {len(events)} 条额度重置" if events else f"{info['name']}：近期没有额度重置")
+            for event in events:
+                when = aihot_time(event.get("confirmedAt") or event.get("updatedAt"))
+                when = f"{when:%m/%d %H:%M} " if when else ""
+                print(f"  · {when}{event.get('title') or event['id']}（{reset_status(event)}）")
+            for event, rank, title in pushes:
+                body = reset_body(event, rank).replace("\n", "\n      ")
+                print(f"  会推送：{STATUS['reset'][0]} {title}\n      {body}")
+            continue
+        for event, rank, title in pushes:
+            # Not under state_lock(): send() takes it itself. The once key stops a crash or an overlapping
+            # run from pushing twice, and a failed delivery waits in the outbox, so the event counts as seen.
+            code = send(title, reset_body(event, rank), status="reset", subtitle=f"AIHOT · {info['name']}",
+                        overrides={"group": "额度重置", "url": event.get("url") or info["page"]},
+                        once=f"reset:{product}:{event['id']}:{rank}", window=10080, quiet=True, show_json=False)
+            print(f"{stamp()} 推送：{title}" + ("" if code == 0 else f"（没送到，已存进待补发，退出码 {code}）"),
+                  flush=True)
+        state[product] = {"etag": etag, "seen": seen}
+    if not dry_run:
+        with state_lock():
+            private_write(RESETS_STATE, json.dumps(state, ensure_ascii=False, indent=1) + "\n")
+    return EXIT_NETWORK if failed == len(products) else 0
+
+
+def launchctl(*args):
+    if os.environ.get("XXD_NOTIFY_NO_LAUNCHCTL"):
+        return 0, ""
+    out = subprocess.run(["launchctl", *args], capture_output=True, text=True)
+    return out.returncode, out.stderr.strip()
+
+
+def install_resets(products, interval):
+    script = str(Path(__file__).resolve())
+    # launchd outlives Homebrew upgrades that move sys.executable; the system python3 stays put
+    python = "/usr/bin/python3" if sys.platform == "darwin" and Path("/usr/bin/python3").exists() else sys.executable
+    command = [python, script, "resets", "check", "--only", ",".join(products)]
+    names = "、".join(RESET_PRODUCTS[p]["name"] for p in products)
+    if sys.platform != "darwin":
+        minutes = max(5, round(interval / 60))
+        print(f"这台机器没有 launchd。运行 crontab -e，加上这一行，每 {minutes} 分钟查一次 {names}：")
+        print(f"*/{minutes} * * * * {shlex.join(command)} >> {shlex.quote(str(RESETS_LOG))} 2>&1")
+        return 0
+    STATE_DIR.mkdir(parents=True, exist_ok=True)
+    private_write(LAUNCH_AGENT, plistlib.dumps({
+        "Label": LAUNCH_LABEL,
+        "ProgramArguments": command,
+        "StartInterval": interval,
+        "RunAtLoad": True,
+        "StandardOutPath": str(RESETS_LOG),
+        "StandardErrorPath": str(RESETS_LOG),
+        # launchd does not see the shell's environment: keep reading the config this install used
+        "EnvironmentVariables": {"XXD_BARK_CONFIG": str(CONFIG_PATH), "XXD_NOTIFY_STATE": str(STATE_DIR)},
+    }).decode("utf-8"))
+    domain = f"gui/{os.getuid()}"
+    launchctl("bootout", f"{domain}/{LAUNCH_LABEL}")
+    code, err = launchctl("bootstrap", domain, str(LAUNCH_AGENT))
+    if code != 0:
+        say(f"xxd-notify: launchctl bootstrap 失败：{err or code}。再运行一次 resets install 试试。")
+        return 1
+    print(f"已开始盯 {names} 的额度重置：每 {interval / 60:g} 分钟查一次 AIHOT，有新动静就推到手机。")
+    print(f"后台任务：{LAUNCH_AGENT}")
+    print(f"日志：{RESETS_LOG}")
+    print(f"停掉：{shlex.join([python, script, 'resets', 'uninstall'])}")
+    return 0
+
+
+def uninstall_resets():
+    if sys.platform != "darwin":
+        print("运行 crontab -e，删掉带 `resets check` 的那一行就停了。")
+        return 0
+    launchctl("bootout", f"gui/{os.getuid()}/{LAUNCH_LABEL}")
+    if LAUNCH_AGENT.exists():
+        LAUNCH_AGENT.unlink()
+        print(f"已停掉额度重置提醒，删了 {LAUNCH_AGENT}")
+    else:
+        print("本来就没有在盯额度重置。")
+    return 0
+
+
+def cmd_resets(args):
+    names = [x.strip().lower() for x in (args.only or "").split(",") if x.strip()] or list(RESET_PRODUCTS)
+    unknown = [x for x in names if x not in RESET_PRODUCTS]
+    if unknown:
+        say(f"不认识：{', '.join(unknown)}（可选：{', '.join(RESET_PRODUCTS)}）")
+        return EXIT_USAGE
+    products = list(dict.fromkeys(names))
+    interval = max(args.interval, RESETS_MIN_INTERVAL)
+    if args.action == "install":
+        return install_resets(products, interval)
+    if args.action == "uninstall":
+        return uninstall_resets()
+    while True:
+        code = check_resets(products, args.dry_run)
+        if not args.loop:
+            return code
+        time.sleep(interval)
+
+
 def build_parser():
     parser = argparse.ArgumentParser(prog="xxd_notify.py", description="把需要你的时刻推到 iPhone（Bark）。")
     sub = parser.add_subparsers(dest="cmd")
@@ -766,6 +998,14 @@ def build_parser():
     p = sub.add_parser("history", help="最近的通知和送达情况")
     p.add_argument("-n", type=int, default=20)
     p.set_defaults(func=cmd_history)
+
+    p = sub.add_parser("resets", help="Codex / Antigravity / Claude / Grok Bot 额度重置时推送（数据来自 AIHOT）")
+    p.add_argument("action", nargs="?", default="check", choices=["check", "install", "uninstall"])
+    p.add_argument("--only", help="只盯这几个，逗号分隔：codex,antigravity,claude,grok-bot（默认全部）")
+    p.add_argument("--dry-run", action="store_true", help="只显示现在的情况和会推什么，不发也不记")
+    p.add_argument("--loop", action="store_true", help="一直跑，每 --interval 秒查一次")
+    p.add_argument("--interval", type=int, default=600, metavar="SEC", help="多久查一次，最短 300")
+    p.set_defaults(func=cmd_resets)
     return parser
 
 

@@ -1,6 +1,6 @@
 ---
 name: xxd-notify
-description: 通过 Bark 把 AI 任务里需要用户的时刻推到 iPhone：要用户拍板（选方案、花钱、对真实用户发消息、删数据、登录授权）、失败或停下、做完了，以及用户点名的进度节点。用户说“做完通知我”“做完发 Bark”“手机提醒我”“需要我确认/选择时 Bark 我”“loop 里要我拍板就叫我”“这个命令跑完推一下”“盯着这个进程/日志，卡住就提醒”，或要设置、测试、修改 Bark 时使用。用户没要求时不推送。
+description: 通过 Bark 把 AI 任务里需要用户的时刻推到 iPhone：要用户拍板（选方案、花钱、对真实用户发消息、删数据、登录授权）、失败或停下、做完了，以及用户点名的进度节点。用户说“做完通知我”“做完发 Bark”“手机提醒我”“需要我确认/选择时 Bark 我”“loop 里要我拍板就叫我”“这个命令跑完推一下”“盯着这个进程/日志，卡住就提醒”，或要设置、测试、修改 Bark 时使用。用户说“Codex/Claude/Antigravity/Grok 额度重置了提醒我”“盯着额度重置”“不用再提醒重置了”时，设置或关掉 AI 额度重置提醒。用户没要求时不推送。
 compatibility: Python 3.8+（只用标准库）和能连到 Bark 服务器的网络。配置在本机 ~/.config/xxd-notify/config.json，不进仓库。
 ---
 
@@ -97,3 +97,21 @@ notify watch --until "test -e out/DONE" --confirm 2 --interval 300 --name "上�
 - **改偏好**：先运行 `notify config show`（Key 已遮住）给用户看当前配置，只改用户提到的项，例如 `notify config set sound birdsong`、`notify config set group "AI 任务"`。可以改的字段有：sound、group、level、icon、url、badge、isArchive、autoCopy、copy、autoSubtitle（填 0 关闭自动副标题）。
 - **配置位置**：配置文件路径可以用环境变量 `XXD_BARK_CONFIG` 改；`XXD_BARK_ENDPOINT` 可以临时指定地址，适合 CI 或另一台机器。
 - **配置缺失时**：不要编造 Key，按上面的“第一次设置”请用户运行 setup。
+
+## 六、AI 额度重置提醒
+
+盯着 Codex、Antigravity、Claude、Grok Bot 的额度重置：官方宣布要重置、正在重置时推一条，确认重置完再推一条。装之前已经发生过的重置不补推，还没落地的会马上推。
+
+用户说“Codex/Claude/Antigravity/Grok 额度重置了提醒我”“盯着额度重置”时，直接装好，不用再问：
+
+```bash
+notify resets install --only claude,codex   # 用户点名哪几个就写哪几个（codex、antigravity、claude、grok-bot）；没点名就去掉 --only，四个都盯
+notify resets check --dry-run               # 看各家现在的重置情况和会推什么，不发也不记
+notify resets uninstall                     # 用户说“不用再提醒重置了”
+```
+
+- 还没设置 Bark 时，先按第五节请用户运行 setup，再 install。
+- macOS 上 install 会装一个 launchd 后台任务（`~/Library/LaunchAgents/com.xxd-notify.resets.plist`），登录后自动跑。再运行一次 install 就换成新的名单。其他系统会打印一行 crontab，请用户自己加。
+- 每 10 分钟从用户自己的电脑查一次 AIHOT 的公开接口。内容没变时接口只回一个空的 304，几乎不占流量。
+- 连不上时只在 `resets.log` 里记一行，不会推送。日志和 `resets.json` 都在配置目录里。
+- 个人非商业使用免费，条款见 https://aihot.news/terms。不要拿它做镜像、转发或收费服务。
