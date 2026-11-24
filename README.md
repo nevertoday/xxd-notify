@@ -1,44 +1,100 @@
 <div align="center">
 
-![xxd-notify](assets/xxd-notify-banner.jpeg)
-
 # xxd-notify
 
-**AI 干活的时候你尽管走开。只有它需要你的时候，iPhone 才会响一下。**
+**AI 需要你的时候，手机才响一下。**
 
-给 Claude Code、Codex 这类 AI 助手用的 Bark 通知 Skill：判断什么时候该叫你，叫你时把事情说清楚，并确保这条真的送到。
+给 Claude Code、Codex 用的 Bark 通知 Skill：什么时候该叫你、叫你时说清楚要你做什么、网断了也送得到。
 
-简体中文 · [English](README.en.md)
+<strong>简体中文</strong> · <a href="README.en.md">English</a>
+
+![zero deps](https://img.shields.io/badge/依赖-0-8A9A8C?style=flat-square)
+![python](https://img.shields.io/badge/Python-3.8+-8A9A8C?style=flat-square)
+![agents](https://img.shields.io/badge/Claude%20Code%20%7C%20Codex-Skill-8A9A8C?style=flat-square)
+![bark](https://img.shields.io/badge/Bark-iPhone-D7B9C8?style=flat-square)
+![license](https://img.shields.io/badge/license-MIT-8A9A8C?style=flat-square)
 
 </div>
 
-<p align="center"><img src="assets/how-it-works.svg" width="100%" alt="终端里 AI 停下来问你选 A 还是 B，手机随即收到一条写明选项的通知；你回复 A 后，它上线完成，再推一条完成通知"></p>
+<p align="center">
+  <img src="assets/how-it-works.svg" width="100%" alt="终端里 AI 停下来问你选 A 还是 B，手机随即收到一条写明选项的通知；你回复 A 后，它上线完成，再推一条完成通知">
+</p>
 
-## 为什么需要它
+<p align="center">
+  <a href="#-安装">安装</a> ·
+  <a href="#-它什么时候会响">什么时候响</a> ·
+  <a href="#-一条好通知长什么样">好通知</a> ·
+  <a href="#-用法">用法</a> ·
+  <a href="#-网断了也不丢">断网不丢</a> ·
+  <a href="#-配置">配置</a> ·
+  <a href="#-常见问题">常见问题</a>
+</p>
 
-你大概遇到过这三种情况：
+## 😵 为什么需要它
 
-1. **守着终端。** AI 要跑一个半小时，你每隔十分钟切回来看一眼，什么也干不成。
-2. **白等。** 它在第 3 分钟就停下来问你「选 A 还是 B」，你吃完饭回来才看到，40 分钟就这么浪费了。
-3. **被吵到静音。** 你给它配了通知，结果每一步都推，手机响到你只好关掉，真正要紧的那条反而淹没在里面。
+你让 Claude 跑一个要一个半小时的重构，然后每隔十分钟切回终端看一眼，什么别的事也没干成。终于决定去吃饭，回来发现它在第 3 分钟就停下来问你「导出按钮放 A 还是 B」，等了你 40 分钟。
 
-xxd-notify 把这三件事一起解决：
+于是你给它接上通知。结果它每一步都推：等待输入、任务完成、命令执行完毕……一个下午 23 条，你把它静音了。然后真正要你拍板的那一条，也一起被静音了。
 
-- **什么时候叫你**：要你出手才叫，平时一声不吭；
-- **叫你时说清楚**：要你决定什么、推荐哪个、去哪看；
-- **确保送到**：网断了会重试、补发，不会丢。
+<p align="center">
+  <img src="assets/before-after.svg" width="100%" alt="同一个下午：每一步都推的通知有 23 条，要紧的那条被淹没；xxd-notify 只有 2 条，每条都写清楚了要你做什么">
+</p>
 
-## 它什么时候会响
+| | 守着终端 | 每一步都推（Stop hook 等） | xxd-notify |
+|---|---|---|---|
+| 什么时候叫你 | 你自己去看 | AI 一停就响，不管为什么停 | 只在要你拍板、失败、做完时 |
+| 通知里写什么 | — | 「等待你的输入」 | 要你决定什么、推荐哪个、去哪看 |
+| 专注模式 | — | 一视同仁 | 要你拍板的穿透专注，其余正常或静默 |
+| 同一个问题 | — | 每次停都再响 | 只问一遍 |
+| 网断了 | — | 这条就没了 | 重试、Mac 本机先弹、网好了补发 |
+| 体积 | — | — | 一个 Python 文件，零依赖 |
 
-<p align="center"><img src="assets/levels.svg" width="100%" alt="五种时刻的打扰程度：要你拍板、失败或停下会穿透专注模式；做完了和你点名的进度正常提醒；其余每一步不打扰"></p>
+## ⚡ 安装
 
-- **要你拍板**：选方案、要花钱、给真实用户发邮件、删数据、需要登录或续费。这类通知用 Bark 的 `timeSensitive` 级别，专注模式下也会亮屏，因为没有你，事情就停在那里。
-- **做完了、进度节点**：正常提醒。进度只在你点名要的时候才发。
+**先在 iPhone 上装 [Bark](https://github.com/Finb/Bark)**（App Store 搜「Bark」），打开后复制里面的推送地址。
+
+### 让 AI 帮你装（推荐）
+
+把下面这段话发给 Claude Code 或 Codex：
+
+```text
+帮我安装 xxd-notify：https://github.com/nevertoday/xxd-notify
+克隆到 ~/.claude/skills/xxd-notify（如果我也用 Codex，再放一份到 ~/.codex/skills/）。
+装好后告诉我在终端运行哪条 setup 命令，我自己粘贴 Bark 地址，不要让我把地址发在对话里。
+```
+
+### 一行命令
+
+```bash
+npx skills add https://github.com/nevertoday/xxd-notify --skill xxd-notify
+# 或者：git clone https://github.com/nevertoday/xxd-notify ~/.claude/skills/xxd-notify
+```
+
+然后粘贴 Bark 地址：
+
+```bash
+python3 ~/.claude/skills/xxd-notify/scripts/xxd_notify.py setup
+```
+
+粘贴的内容不会显示，也不会留在命令历史里。在 Claude Code 里可以直接输入 `! python3 ~/.claude/skills/xxd-notify/scripts/xxd_notify.py setup`。手机收到「🧪 Bark 连接正常」就装好了。
+
+> [!TIP]
+> 只要 Python 3.8 及以上，不需要装任何依赖。macOS 和大多数 Linux 都自带 Python。
+
+## 🔔 它什么时候会响
+
+<p align="center">
+  <img src="assets/levels.svg" width="100%" alt="五种时刻的打扰程度：要你拍板、失败或停下会穿透专注模式；做完了和你点名的进度正常提醒；其余每一步不打扰">
+</p>
+
+- **要你拍板**：选方案、要花钱、给真实用户发邮件、删数据、需要登录或续费。用 Bark 的 `timeSensitive` 级别，专注模式下也会亮屏，因为没有你，事情就停在那里。
+- **失败了、停下了**：自己修不了，或者额度用完被迫暂停。同样穿透专注模式。
+- **做完了、你点名的进度**：正常提醒。进度只在你要求时才发。
 - **其余所有时候**：一条都不推。
 
 另外，**你不开口它就不发**。普通对话、普通任务，它不会自作主张去打扰你。
 
-## 一条好通知长什么样
+## 📱 一条好通知长什么样
 
 | 一般的通知 | xxd-notify 发的 |
 |---|---|
@@ -46,80 +102,53 @@ xxd-notify 把这三件事一起解决：
 | 请处理 | **⚠️ #42 要你选方案**<br>A 导出按钮放顶栏右侧（推荐）<br>B 放页面底部<br>回终端回复 A/B · *点开通知直接看方案页* |
 | 出错了 | **⏹️ 额度用完，任务已停**<br>停在第 37/120 个文件<br>进度已保存，有额度后说「继续」即可 |
 
-几个细节：
-
 - **副标题自动写上项目名**。同时开着五个会话，也知道该回哪一个。
 - **第一行就是结论**，在锁屏上扫一眼就够。
 - **同一个问题只问一遍**，不会每 10 分钟追着你响。
 
-## 怎么用：直接跟 AI 说
+## 🧭 用法
+
+### 直接跟 AI 说
 
 装好以后不用记命令，在对话里说清楚**什么时候叫你**就行：
 
-> 把测试全部跑完，做完用 Bark 通知我，失败了也告诉我。
+- 「把测试全部跑完，做完用 Bark 通知我，失败了也告诉我。」
+- 「开 loop 逐个处理 issue。凡是需要我确认的时候（选方案、要花钱、给真实用户发邮件、删数据），先 Bark 我，写清楚要我确认什么、去哪里看。」
+- 「这批 500 张图每完成 20% 告诉我一次，遇到异常马上叫我。」
+- 「后台那个批处理帮我盯着，卡住了或者磁盘不够就提醒我，跑完也说一声。」
+- 「Bark 好像没收到，查一下之前那条发出去没有。」
 
-> 开 loop 逐个处理 issue。凡是需要我确认的时候（选方案、要花钱、给真实用户发邮件、删数据），先 Bark 我，写清楚要我确认什么、去哪里看。
+「需要我确认就叫我」这句只要在会话开头说一次，整个 loop 都有效。Skill 原文在 [SKILL.md](SKILL.md)。
 
-> 这批 500 张图每完成 20% 告诉我一次，遇到异常马上叫我。
-
-> 后台那个批处理帮我盯着，卡住了或者磁盘不够就提醒我，跑完也说一声。
-
-> Bark 好像没收到，查一下之前那条发出去没有。
-
-「需要我确认就叫我」这句只要在会话开头说一次，整个 loop 都有效。
-
-## 不用 AI 也能用：三个命令
+### 不用 AI 也能用
 
 ```bash
 alias notify="python3 ~/.claude/skills/xxd-notify/scripts/xxd_notify.py"
-
-# 1. 包住任何长命令：结束时按退出码推 ✅ 或 ❌，退出码原样返回
-notify run --title "跑测试" --tail 3 -- npm test
-
-# 2. 盯着后台任务：进程结束推一条；日志 30 分钟不动、磁盘低于 15G 各提醒一次
-notify watch --pid 12345 --name "批处理" --log logs/latest.log --stall 30 --disk / --min-free 15
-
-# 3. 自己发一条（-s 决定前缀和打扰程度：decide / fail / stop / done / progress）
-notify send -s decide -t "要你选域名" -b $'A example.com（推荐）\nB example.ai' --url "https://…"
 ```
 
-## 网断了也不丢
+| 命令 | 作用 |
+|---|---|
+| `notify run --title "跑测试" --tail 3 -- npm test` | 包住任何长命令，结束时按退出码推 ✅ 或 ❌，退出码原样返回 |
+| `notify watch --pid 12345 --log logs/latest.log --stall 30` | 盯着后台任务：进程结束推一条；日志 30 分钟不动提醒一次 |
+| `notify watch … --disk / --min-free 15` | 磁盘低于 15G 提醒一次 |
+| `notify send -s decide -t "要你选域名" -b $'A example.com（推荐）\nB example.ai'` | 自己发一条；`-s` 决定前缀和打扰程度：`decide` `fail` `stop` `done` `progress` |
+| `notify history` | 每一条通知的送达情况 |
+| `notify flush` | 立刻补发没送到的 |
 
-<p align="center"><img src="assets/never-lost.svg" width="100%" alt="发送失败会自动重试；真的断网时先在 Mac 上弹本机通知并存进待补发，网络恢复后随下一条通知补发"></p>
+## 🛟 网断了也不丢
+
+<p align="center">
+  <img src="assets/never-lost.svg" width="100%" alt="发送失败会自动重试；真的断网时先在 Mac 上弹本机通知并存进待补发，网络恢复后随下一条通知补发">
+</p>
 
 最需要叫你的时刻，往往网络也正好不稳：代理在切换、Wi-Fi 刚断。所以：
 
-- **自动重试**：失败后隔 2 秒、5 秒、15 秒各重试一次；
-- **真的发不出去**：先在 Mac 上弹一条本机通知，同时把消息存进待补发；下一条通知送达时顺路补上，并标明原定时间；
-- **不会刷屏**：同样的消息 2 分钟内只发一次，`--once` 能让同一件事一小时内只推一次；
-- **中文不会让它发不出去**：macOS 自带的 bash 3.2 会把紧跟在变量后面的中文弄坏，比如 `$reason（`，以前遇到这种字节整条通知就发不出去，现在照样能发出；
-- **能查**：`notify history` 列出每一条通知的送达情况。
+1. **自动重试**：失败后隔 2 秒、5 秒、15 秒各重试一次。
+2. **真的发不出去**：先在 Mac 上弹一条本机通知，同时把消息存进待补发；下一条通知送达时顺路补上，并标明原定时间。
+3. **不会刷屏**：同样的消息 2 分钟内只发一次，`--once` 能让同一件事一小时内只推一次。
+4. **中文不会让它发不出去**：macOS 自带的 bash 3.2 会把紧跟在变量后面的中文弄坏，比如 `$reason（`，以前遇到这种字节整条通知就发不出去，现在照样能发出。
 
-## 3 分钟装好
-
-**1. 手机装 Bark。** 在 App Store 搜「Bark」（[项目主页](https://github.com/Finb/Bark)），打开后复制里面的推送地址。
-
-**2. 装 Skill。**
-
-```bash
-npx skills add https://github.com/nevertoday/xxd-notify --skill xxd-notify
-# 或者手动：
-git clone https://github.com/nevertoday/xxd-notify ~/.claude/skills/xxd-notify
-```
-
-Codex 用户把路径换成 `~/.codex/skills/xxd-notify`。
-
-**3. 粘贴地址。**
-
-```bash
-python3 ~/.claude/skills/xxd-notify/scripts/xxd_notify.py setup
-```
-
-把 Bark 里复制的地址粘进去。粘贴的内容不会显示，也不会留在命令历史里。在 Claude Code 里可以直接输入 `! python3 …/xxd_notify.py setup`。手机收到「🧪 Bark 连接正常」就装好了。
-
-只要 Python 3.8 及以上，不需要装任何依赖。macOS 和大多数 Linux 都自带 Python。
-
-## 配置
+## ⚙️ 配置
 
 ```bash
 notify config show                  # 查看配置（Key 会被遮住）
@@ -138,13 +167,21 @@ notify test                         # 发一条测试通知
 | `icon` / `url` / `badge` / `copy` / `autoCopy` | 同 Bark 的同名参数 | — |
 | `autoSubtitle` | 副标题自动写项目名 | `1` |
 
+<details>
+<summary><b>环境变量和配置文件位置</b></summary>
+<br>
+
 - 配置文件在 `~/.config/xxd-notify/config.json`，权限为只有你自己能读写；
-- 环境变量 `XXD_BARK_CONFIG` 可以换配置文件的位置；
-- `XXD_BARK_ENDPOINT` 可以临时指定 Bark 地址（适合 CI）；
-- `XXD_NOTIFY_SOURCE` 可以指定副标题；
+- `XXD_BARK_CONFIG` 换配置文件的位置；
+- `XXD_BARK_ENDPOINT` 临时指定 Bark 地址（适合 CI）；
+- `XXD_NOTIFY_SOURCE` 指定副标题；
 - 自建的 [bark-server](https://github.com/Finb/bark-server) 也能用，局域网地址允许用 http。
 
-## 在自己的脚本里调用
+</details>
+
+<details>
+<summary><b>在自己的脚本里调用：退出码</b></summary>
+<br>
 
 ```bash
 notify send -t "⚠️ 磁盘快满了" -b "/Volumes/Data 只剩 9G" --once disk-low || true
@@ -159,33 +196,74 @@ notify send -t "⚠️ 磁盘快满了" -b "/Volumes/Data 只剩 9G" --once disk
 
 退出码不为 0 的消息都存进了待补发，所以写 `|| true` 不会丢消息。老的 `scripts/bark_notify.sh --title … --body …` 和 `scripts/bark_config.py` 照样能用。
 
-## 常见问题
+</details>
 
-**和 Claude Code 自带的 Stop hook 通知有什么不一样？**
+## ❓ 常见问题
+
+<details>
+<summary><b>和 Claude Code 自带的 Stop hook 通知有什么不一样？</b></summary>
+<br>
+
 Stop hook 只要 AI 停下就响，不管它为什么停：做完了、卡住了，还是只是在等你回一句话。xxd-notify 由 AI 判断这次是不是真的需要你，并把要你做的事写在通知里。两者可以一起用。
 
-**会不会把我的代码发出去？**
+</details>
+
+<details>
+<summary><b>会不会把我的代码发出去？</b></summary>
+<br>
+
 只发标题和几行正文，Skill 明确规定不能写 Key、密码、token、私密对话或大段原文。消息会经过 Bark 的服务器（api.day.app）；介意的话可以自建 bark-server。
 
-**安卓能用吗？**
+</details>
+
+<details>
+<summary><b>安卓能用吗？</b></summary>
+<br>
+
 Bark 只有 iPhone / iPad 版（Apple 芯片的 Mac 也能装），安卓暂时不行。
 
-**没收到怎么办？**
+</details>
+
+<details>
+<summary><b>没收到怎么办？</b></summary>
+<br>
+
 先跑 `notify history` 看那条是「已送达」还是「待补发」。待补发的消息，在网络或 Key 修好后跑 `notify flush` 就会补发。
 
-## 开发
+</details>
+
+<details>
+<summary><b>Key 泄露了怎么办？</b></summary>
+<br>
+
+Bark Key 等同于密码。它只存在你本机的配置文件里，不要写进 README、代码、Issue、截图或命令历史。`setup` 用隐藏输入，`config show` 会遮住 Key。泄露了就在 Bark App 里重置。
+
+</details>
+
+## 📦 项目结构
+
+```text
+SKILL.md                     给 AI 看的规则：什么时候叫你、怎么写、不能写什么
+scripts/xxd_notify.py        发送、重试、待补发、去重、run / watch / setup，只用 Python 标准库
+scripts/bark_notify.sh       旧接口，照样能用
+tests/                       用本地的假 Bark 服务器测试，不会推到你手机
+assets/src/build_assets.py   生成 README 里的动画 SVG（中英两套）
+assets/src/social.html       分享封面（GitHub 和 X 上的预览大图）
+assets/src/make_gif.py       逐帧渲染出 GIF，再截出 social.png
+```
 
 ```bash
-python3 -m unittest discover -s tests     # 测试用本地的假 Bark 服务器，不会推到你手机
-python3 assets/src/build_assets.py        # 重新生成 README 里的动画 SVG（中英两套）
+python3 -m unittest discover -s tests       # 跑测试
+python3 assets/src/build_assets.py          # 改了图里的文字后重新生成 SVG
+python3 assets/src/make_gif.py              # 需要 Chrome 和 ffmpeg
 ```
 
 `assets/how-it-works.gif` 是主动画的 GIF 版，用在不能播 SVG 动画的地方，比如推文、小红书、公众号。
 
-## 安全
+## 🙌 致谢
 
-Bark Key 等同于密码。它只存在你本机的配置文件里，不要写进 README、代码、Issue、截图或命令历史。`setup` 用隐藏输入，`config show` 会遮住 Key。如果 Key 泄露了，在 Bark App 里重置即可。
+推送靠 [Bark](https://github.com/Finb/Bark)，感谢 Finb 做了这么好用又开源的推送工具。
 
-## License
+## 📄 License
 
-MIT
+[MIT](LICENSE)

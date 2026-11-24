@@ -1,8 +1,10 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 936 440" width="936" height="440" role="img" aria-label="xxd-notify 怎么工作：AI 卡在要你拍板的地方，手机才响">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 944 452" width="944" height="452" role="img" aria-label="xxd-notify 怎么工作：AI 卡在要你拍板的地方，手机才响">
 <title>xxd-notify 怎么工作：AI 卡在要你拍板的地方，手机才响</title>
+<defs><filter id="sh" x="-15%" y="-15%" width="130%" height="140%"><feDropShadow dx="0" dy="14" stdDeviation="16" flood-color="#3A3326" flood-opacity=".16"/></filter><filter id="sh2" x="-10%" y="-20%" width="120%" height="160%"><feDropShadow dx="0" dy="4" stdDeviation="6" flood-color="#3A3326" flood-opacity=".10"/></filter><linearGradient id="wall" x1="0" y1="0" x2=".35" y2="1"><stop offset="0" stop-color="#D7E2EC"/><stop offset=".55" stop-color="#E0DAEA"/><stop offset="1" stop-color="#EFDFC9"/></linearGradient></defs>
 <style>
-text{font-family:'PingFang SC','Hiragino Sans GB','Microsoft YaHei','Noto Sans CJK SC','Segoe UI',system-ui,sans-serif;fill:#efe8da}
-.mono{font-family:'SF Mono','JetBrains Mono',Menlo,Consolas,'PingFang SC','Microsoft YaHei',monospace}
+svg{fill:#2B2A27}
+text{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei','Segoe UI',sans-serif}
+.mono{font-family:ui-monospace,'SF Mono','JetBrains Mono',Menlo,Consolas,'PingFang SC','Microsoft YaHei',monospace}
 @keyframes l0{0%,2.86%{opacity:0;transform:translateY(4px)}6.07%,95.71%{opacity:1;transform:none}98.93%,100%{opacity:0;transform:none}}.l0{animation:l0 14s infinite both;transform-box:fill-box;transform-origin:center}
 @keyframes l1{0%,10.00%{opacity:0;transform:translateY(4px)}13.21%,95.71%{opacity:1;transform:none}98.93%,100%{opacity:0;transform:none}}.l1{animation:l1 14s infinite both;transform-box:fill-box;transform-origin:center}
 @keyframes l2{0%,18.57%{opacity:0;transform:translateY(4px)}21.79%,95.71%{opacity:1;transform:none}98.93%,100%{opacity:0;transform:none}}.l2{animation:l2 14s infinite both;transform-box:fill-box;transform-origin:center}
@@ -16,55 +18,56 @@ text{font-family:'PingFang SC','Hiragino Sans GB','Microsoft YaHei','Noto Sans C
 @keyframes tap{0%,54.29%{opacity:0;transform:translateY(0px)}56.43%,60.00%{opacity:1;transform:none}62.14%,100%{opacity:0;transform:none}}.tap{animation:tap 14s infinite both;transform-box:fill-box;transform-origin:center}
 @media (prefers-reduced-motion: reduce){*{animation:none!important}}
 </style>
-<rect width="936" height="440" rx="18" fill="#10151e"/>
-<rect x="28" y="28" width="540" height="262" rx="14" fill="#171e2a" stroke="#2b3546"/>
-<path d="M28 42 a14 14 0 0 1 14 -14 h512 a14 14 0 0 1 14 14 v20 h-540 z" fill="#1e2634"/>
-<circle cx="48" cy="45" r="5" fill="#e8472e" opacity=".85"/>
-<circle cx="66" cy="45" r="5" fill="#f1b43c" opacity=".85"/>
-<circle cx="84" cy="45" r="5" fill="#7cc84a" opacity=".85"/>
-<text x="298.0" y="49.5" font-size="12" fill="#8d95a5" text-anchor="middle">Claude Code · my-app</text>
-<g class="l0"><text class="mono" x="52" y="98" font-size="15" fill="#efe8da">› 处理 issue #42：设置页导出</text></g>
-<g class="l1"><text class="mono" x="52" y="132" font-size="15" fill="#7cc84a">  ✓ 改完 6 个文件，测试 312/312</text></g>
-<g class="l2"><text class="mono" x="52" y="166" font-size="15" fill="#f1b43c" font-weight="700">  ? 导出按钮放哪？A / B / C</text></g>
-<g class="l3"><text class="mono" x="52" y="200" font-size="15" fill="#8d95a5">  ⏸ 等你拍板…</text></g>
-<g class="l4"><text class="mono" x="52" y="200" font-size="15" fill="#efe8da">› A</text></g>
-<g class="l5"><text class="mono" x="52" y="234" font-size="15" fill="#7cc84a">  ✓ 已上线，issue 已关闭</text></g>
-<rect class="blink" x="52" y="198" width="9" height="3" fill="#f1b43c"/>
-<text x="28" y="336" font-size="21" font-weight="700">你去忙你的。<tspan fill="#f1b43c" dx="6">只有 AI 卡在要你拍板的地方，手机才会响。</tspan></text>
-<text x="28" y="366" font-size="14.5" fill="#8d95a5">不用守着终端，也不会被每个小步骤吵到。做完了，它再告诉你一声。</text>
-<g class="shake"><rect x="640" y="22" width="268" height="396" rx="40" fill="#0b0f16" stroke="#3a4558" stroke-width="2"/>
-<rect x="648" y="30" width="252" height="380" rx="33" fill="#141b27"/>
-<rect x="732.0" y="40" width="84" height="22" rx="11" fill="#05070b"/>
-<text x="774.0" y="120" font-size="52" font-weight="300" text-anchor="middle" fill="#efe8da">09:47</text>
-<text x="774.0" y="144" font-size="13" text-anchor="middle" fill="#8d95a5">11月3日 星期二</text>
-<g class="n1"><g transform="translate(656,168)">
-<rect width="236" height="117" rx="16" fill="#252d3b" stroke="#2b3546"/>
-<rect x="12" y="12" width="22" height="22" rx="6" fill="#e8472e"/>
-<path d="M0,-8.5 C-4.6,-8.5 -6.6,-5 -6.6,-1.2 L-6.6,3.6 L-8.6,5.8 L8.6,5.8 L6.6,3.6 L6.6,-1.2 C6.6,-5 4.6,-8.5 0,-8.5 Z M-2.4,7.4 A2.4,2.4 0 0 0 2.4,7.4 Z" transform="translate(23,22.5) scale(.82)" fill="#efe8da"/>
-<text x="42" y="27" font-size="11" fill="#8d95a5" letter-spacing=".5">BARK</text>
-<text x="224" y="27" font-size="11" fill="#8d95a5" text-anchor="end">现在</text>
+<rect width="944" height="452" rx="22" fill="#F1EFEA"/>
+<clipPath id="win"><rect x="32" y="32" width="540" height="262" rx="12"/></clipPath>
+<rect x="32" y="32" width="540" height="262" rx="12" fill="#000" opacity=".9" filter="url(#sh)"/>
+<g clip-path="url(#win)"><rect x="32" y="32" width="540" height="262" fill="#EBD6D3"/></g>
+<circle cx="52" cy="49" r="6" fill="#FF5F57"/>
+<circle cx="72" cy="49" r="6" fill="#FEBC2E"/>
+<circle cx="92" cy="49" r="6" fill="#28C840"/>
+<text x="302.0" y="53.5" font-size="12" fill="#2B2A27" opacity=".5" text-anchor="middle">claude — my-app</text>
+<g class="l0"><text class="mono" x="56" y="104" font-size="15" fill="#2B2A27" style="white-space:pre">✻ 处理 issue #42：设置页导出</text></g>
+<g class="l1"><text class="mono" x="56" y="138" font-size="15" fill="#3E8A5E" style="white-space:pre">  ⎿ 改完 6 个文件，测试 312/312</text></g>
+<g class="l2"><text class="mono" x="56" y="172" font-size="15" fill="#C25B52" style="white-space:pre" font-weight="700">  ? 导出按钮放哪？A / B / C</text></g>
+<g class="l3"><text class="mono" x="56" y="206" font-size="15" fill="#8A867D" style="white-space:pre">  ⏸ 等你拍板…</text></g>
+<g class="l4"><text class="mono" x="56" y="206" font-size="15" fill="#2B2A27" style="white-space:pre">❯ A</text></g>
+<g class="l5"><text class="mono" x="56" y="240" font-size="15" fill="#3E8A5E" style="white-space:pre">  ✓ 已上线，issue 已关闭</text></g>
+<rect class="blink" x="164" y="193" width="8" height="16" fill="#8A867D"/>
+<text x="32" y="344" font-size="21" font-weight="700">你去忙你的。<tspan fill="#C25B52" dx="6">只有 AI 卡在要你拍板的地方，手机才会响。</tspan></text>
+<text x="32" y="374" font-size="14.5" fill="#8A867D">不用守着终端，也不会被每个小步骤吵到。做完了，它再告诉你一声。</text>
+<g class="shake"><rect x="644" y="26" width="268" height="400" rx="42" fill="#2B2A27" filter="url(#sh)"/>
+<rect x="652" y="34" width="252" height="384" rx="34" fill="url(#wall)"/>
+<rect x="736.0" y="44" width="84" height="23" rx="11.5" fill="#1B1A18"/>
+<text x="778.0" y="126" font-size="54" font-weight="300" text-anchor="middle" fill="#2B2A27" opacity=".88">09:47</text>
+<text x="778.0" y="150" font-size="13" text-anchor="middle" fill="#2B2A27" opacity=".6">11月3日 星期二</text>
+<rect x="728.0" y="404" width="100" height="4" rx="2" fill="#2B2A27" opacity=".35"/>
+<g class="n1"><g transform="translate(660,172) scale(1.0)">
+<rect width="236" height="166" rx="16" fill="#FBFAF8" fill-opacity=".94" stroke="#fff" filter="url(#sh2)"/>
+<rect x="12" y="12" width="22" height="22" rx="6" fill="#C25B52"/>
+<path d="M0,-8.5 C-4.6,-8.5 -6.6,-5 -6.6,-1.2 L-6.6,3.6 L-8.6,5.8 L8.6,5.8 L6.6,3.6 L6.6,-1.2 C6.6,-5 4.6,-8.5 0,-8.5 Z M-2.4,7.4 A2.4,2.4 0 0 0 2.4,7.4 Z" transform="translate(23,22.5) scale(.82)" fill="#FBFAF8"/>
+<text x="42" y="27" font-size="11" fill="#8A867D" letter-spacing=".5">BARK</text>
+<text x="224" y="27" font-size="11" fill="#8A867D" text-anchor="end">现在</text>
 <text x="12" y="52" font-size="13.5" font-weight="700">⚠️ #42 要你选方案</text>
-<text x="12" y="69" font-size="11" fill="#f1b43c">my-app</text>
-<text x="12" y="88" font-size="12" fill="#d6d0c4">A 顶栏右侧（推荐）</text>
-<text x="12" y="105" font-size="12" fill="#d6d0c4">B 页面底部</text>
-<text x="12" y="122" font-size="12" fill="#d6d0c4">回终端回复 A/B</text>
-<rect x="12" y="125" width="128" height="20" rx="10" fill="#e8472e" opacity=".18"/><text x="22" y="139" font-size="11" fill="#ff9c86">专注模式下也会亮屏</text>
-</g></g><g class="n2"><g transform="translate(656,168)">
-<rect width="236" height="100" rx="16" fill="#252d3b" stroke="#2b3546"/>
-<rect x="12" y="12" width="22" height="22" rx="6" fill="#e8472e"/>
-<path d="M0,-8.5 C-4.6,-8.5 -6.6,-5 -6.6,-1.2 L-6.6,3.6 L-8.6,5.8 L8.6,5.8 L6.6,3.6 L6.6,-1.2 C6.6,-5 4.6,-8.5 0,-8.5 Z M-2.4,7.4 A2.4,2.4 0 0 0 2.4,7.4 Z" transform="translate(23,22.5) scale(.82)" fill="#efe8da"/>
-<text x="42" y="27" font-size="11" fill="#8d95a5" letter-spacing=".5">BARK</text>
-<text x="224" y="27" font-size="11" fill="#8d95a5" text-anchor="end">现在</text>
+<text x="12" y="69" font-size="11" fill="#8A867D">my-app</text>
+<text x="12" y="88" font-size="12" fill="#2B2A27" opacity=".82">A 顶栏右侧（推荐）</text>
+<text x="12" y="105" font-size="12" fill="#2B2A27" opacity=".82">B 页面底部</text>
+<text x="12" y="122" font-size="12" fill="#2B2A27" opacity=".82">回终端回复 A/B</text>
+<rect x="12" y="134" width="121" height="20" rx="10" fill="#EBD6D3"/><text x="23" y="148" font-size="11" fill="#C25B52">专注模式下也会亮屏</text>
+</g></g><g class="n2"><g transform="translate(660,172) scale(1.0)">
+<rect width="236" height="149" rx="16" fill="#FBFAF8" fill-opacity=".94" stroke="#fff" filter="url(#sh2)"/>
+<rect x="12" y="12" width="22" height="22" rx="6" fill="#C25B52"/>
+<path d="M0,-8.5 C-4.6,-8.5 -6.6,-5 -6.6,-1.2 L-6.6,3.6 L-8.6,5.8 L8.6,5.8 L6.6,3.6 L6.6,-1.2 C6.6,-5 4.6,-8.5 0,-8.5 Z M-2.4,7.4 A2.4,2.4 0 0 0 2.4,7.4 Z" transform="translate(23,22.5) scale(.82)" fill="#FBFAF8"/>
+<text x="42" y="27" font-size="11" fill="#8A867D" letter-spacing=".5">BARK</text>
+<text x="224" y="27" font-size="11" fill="#8A867D" text-anchor="end">现在</text>
 <text x="12" y="52" font-size="13.5" font-weight="700">✅ #42 已上线并关闭</text>
-<text x="12" y="69" font-size="11" fill="#7cc84a">my-app</text>
-<text x="12" y="88" font-size="12" fill="#d6d0c4">6 个文件 · 测试 312/312</text>
-<text x="12" y="105" font-size="12" fill="#d6d0c4">用时 18 分钟</text>
-<rect x="12" y="108" width="68" height="20" rx="10" fill="#7cc84a" opacity=".16"/><text x="22" y="122" font-size="11" fill="#7cc84a">普通提醒</text>
-</g></g>
-<rect x="724.0" y="396" width="100" height="4" rx="2" fill="#3a4558"/></g>
-<path d="M562 161 C608 91, 600 172, 644 212" fill="none" stroke="#f1b43c" stroke-width="1.5" stroke-dasharray="3 6" opacity=".35"/>
-<circle r="5.0" fill="#f1b43c"><animateMotion dur="14s" repeatCount="indefinite" path="M562 161 C608 91, 600 172, 644 212" calcMode="linear" keyPoints="0;0;1;1" keyTimes="0;0.2286;0.2857;1"/><animate attributeName="opacity" dur="14s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.2286;0.2321;0.2821;0.2857;1"/></circle>
-<circle r="3.9" fill="#f1b43c"><animateMotion dur="14s" repeatCount="indefinite" path="M562 161 C608 91, 600 172, 644 212" calcMode="linear" keyPoints="0;0;1;1" keyTimes="0;0.2414;0.2986;1"/><animate attributeName="opacity" dur="14s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.2414;0.2450;0.2950;0.2986;1"/></circle>
-<circle r="2.8" fill="#f1b43c"><animateMotion dur="14s" repeatCount="indefinite" path="M562 161 C608 91, 600 172, 644 212" calcMode="linear" keyPoints="0;0;1;1" keyTimes="0;0.2543;0.3114;1"/><animate attributeName="opacity" dur="14s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.2543;0.2579;0.3079;0.3114;1"/></circle>
-<g class="tap"><circle cx="774.0" cy="226.5" r="26" fill="#efe8da" opacity=".16"/><circle cx="774.0" cy="226.5" r="12" fill="#efe8da" opacity=".35"/></g>
+<text x="12" y="69" font-size="11" fill="#8A867D">my-app</text>
+<text x="12" y="88" font-size="12" fill="#2B2A27" opacity=".82">6 个文件 · 测试 312/312</text>
+<text x="12" y="105" font-size="12" fill="#2B2A27" opacity=".82">用时 18 分钟</text>
+<rect x="12" y="117" width="66" height="20" rx="10" fill="#DDE7D3"/><text x="23" y="131" font-size="11" fill="#3E8A5E">普通提醒</text>
+</g></g></g>
+<path d="M566 167 C612 97, 604 176, 648 216" fill="none" stroke="#C25B52" stroke-width="1.5" stroke-dasharray="3 6" opacity=".35"/>
+<circle r="5.0" fill="#C25B52"><animateMotion dur="14s" repeatCount="indefinite" path="M566 167 C612 97, 604 176, 648 216" calcMode="linear" keyPoints="0;0;1;1" keyTimes="0;0.2286;0.2857;1"/><animate attributeName="opacity" dur="14s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.2286;0.2321;0.2821;0.2857;1"/></circle>
+<circle r="3.9" fill="#C25B52"><animateMotion dur="14s" repeatCount="indefinite" path="M566 167 C612 97, 604 176, 648 216" calcMode="linear" keyPoints="0;0;1;1" keyTimes="0;0.2414;0.2986;1"/><animate attributeName="opacity" dur="14s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.2414;0.2450;0.2950;0.2986;1"/></circle>
+<circle r="2.8" fill="#C25B52"><animateMotion dur="14s" repeatCount="indefinite" path="M566 167 C612 97, 604 176, 648 216" calcMode="linear" keyPoints="0;0;1;1" keyTimes="0;0.2543;0.3114;1"/><animate attributeName="opacity" dur="14s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.2543;0.2579;0.3079;0.3114;1"/></circle>
+<g class="tap"><circle cx="778.0" cy="255.0" r="26" fill="#2B2A27" opacity=".10"/><circle cx="778.0" cy="255.0" r="12" fill="#2B2A27" opacity=".22"/></g>
 </svg>
