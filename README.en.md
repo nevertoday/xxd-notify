@@ -4,7 +4,7 @@
 
 **Your phone buzzes only when the AI actually needs you.**
 
-A Bark notification skill for Claude Code and Codex: it knows when to interrupt you, says what it needs, and gets through when the network doesn't.
+One Bark push URL lets your terminal, your scripts, and any AI tool call you.<br>The Skill included here is our example for Claude Code and Codex. It knows when to interrupt you, says what it needs, and gets through when the network doesn't.
 
 <a href="README.md">简体中文</a> · <strong>English</strong>
 
@@ -21,7 +21,8 @@ A Bark notification skill for Claude Code and Codex: it knows when to interrupt 
 </p>
 
 <p align="center">
-  <a href="#-install">Install</a> ·
+  <a href="#-use-it-without-the-skill">Without the Skill</a> ·
+  <a href="#-install-the-skill">Install the Skill</a> ·
   <a href="#-when-it-rings">When it rings</a> ·
   <a href="#-what-a-good-notification-looks-like">Good notifications</a> ·
   <a href="#-usage">Usage</a> ·
@@ -49,9 +50,96 @@ So you wire up notifications. Now it pings on every step: waiting for input, tas
 | Network drops | — | message is gone | retries, shows on your Mac, resends later |
 | Footprint | — | — | one Python file, zero dependencies |
 
-## ⚡ Install
+## 🔑 Use it without the Skill
 
-**First, get [Bark](https://github.com/Finb/Bark) on your iPhone** (App Store: "Bark") and copy your push URL from the app.
+xxd-notify runs on Bark. Once Bark is on your phone, you have a push URL. Send a request to that URL and your phone rings. A browser, a terminal, a script, a cron job, a Shortcut, or any AI tool that can open a link can send that request.
+
+The Skill below is one way we use it. It teaches Claude Code and Codex when to interrupt you and what to put in the notification. You can skip it and build your own setup around the URL.
+
+### Get your push URL
+
+1. Install [Bark](https://github.com/Finb/Bark) on your iPhone. Search the App Store for "Bark".
+2. Open the app and copy the push URL on the home screen. It looks like `https://api.day.app/YOUR_KEY/`.
+
+> [!WARNING]
+> Treat the URL like a password. Anyone who has it can push notifications to your phone, but they can't read anything. If it leaks, reset the key in the Bark app.
+
+### The simplest push
+
+Open this link in a browser and your phone rings:
+
+```text
+https://api.day.app/YOUR_KEY/Tests%20done/All%2012%20passed
+```
+
+From a terminal, use curl. Add options after the question mark:
+
+```bash
+curl "https://api.day.app/YOUR_KEY/Tests%20done/All%2012%20passed?group=AI&sound=bell"
+```
+
+If the text has spaces, line breaks, or special characters, POST JSON instead. You don't have to encode anything:
+
+```bash
+curl -X POST https://api.day.app/push \
+  -H 'Content-Type: application/json; charset=utf-8' \
+  -d '{"device_key":"YOUR_KEY","title":"Pick a layout","body":"A: top bar (recommended)\nB: bottom","level":"timeSensitive"}'
+```
+
+The common options have the same names in a GET link and in JSON:
+
+| Option | What it does |
+|---|---|
+| `level` | `active` is a normal alert (default). `timeSensitive` shows during Focus. `passive` goes to the list without lighting the screen. `critical` rings on silent, after you allow Critical Alerts in Bark |
+| `sound` | A ringtone name such as `bell` or `minuet`. You can preview them in Bark |
+| `call` | With `1`, the ringtone repeats for 30 seconds. To ring longer, send several. Bark plays them one after another |
+| `group` | The group in the notification list |
+| `url` | The page that opens when you tap the notification |
+| `icon` | An image URL for the notification icon |
+
+All options are in [Bark's parameter reference](https://bark.day.app/#/en-us/params).
+
+### Combine it with anything
+
+- **A long command.** `npm test && curl -s "https://api.day.app/YOUR_KEY/Tests%20passed" || curl -s "https://api.day.app/YOUR_KEY/Tests%20failed"`.
+- **Scheduled jobs.** Add one curl line as the last step of a cron job, a launchd job, or a GitHub Actions workflow. In GitHub Actions, store the URL as a secret, not in the workflow file.
+- **Shortcuts.** On iPhone or Mac, use the "Get Contents of URL" action with your push URL.
+- **Your own code.** Any language that can send an HTTP request works. In Python, the standard library is enough:
+
+```python
+import json, urllib.request
+data = json.dumps({"device_key": "YOUR_KEY", "title": "Backup done", "body": "3.2 GB"}).encode()
+urllib.request.urlopen(urllib.request.Request("https://api.day.app/push", data, {"Content-Type": "application/json"}))
+```
+
+### Use it in other AI tools
+
+If a tool supports MCP, connect it to Bark's official MCP URL. The AI then has a "send notification" tool. In Claude Code, run:
+
+```bash
+claude mcp add bark --transport http https://api.day.app/mcp/YOUR_KEY
+```
+
+In Cursor, VS Code, and other tools, add `https://api.day.app/mcp/YOUR_KEY` in their MCP settings.
+
+If a tool has no MCP support but can open a link or send a web request, it can use the push URL. Chat assistants in a web page or an app, such as Muse and Grok Bot, count too.
+
+The Skill does two things: it decides when to call you, and it decides what to write. Put those two things into a few sentences, and they work in any AI tool's rules or custom instructions. Examples are Cursor Rules, `AGENTS.md` for Codex, `CLAUDE.md` for Claude Code, or a chat app's custom instructions. Start from this:
+
+```text
+When you need my decision (picking an option, spending money, deleting data, messaging real users),
+when a task fails, or when it's done, send me a Bark notification by opening
+https://api.day.app/<MY_KEY>/<title>/<body>.
+Put the conclusion in the title. In the body, say what you need from me, what you recommend, and where to look.
+Don't send anything else, and send each thing once. Never write this URL into code, logs, or replies.
+```
+
+> [!NOTE]
+> When you give the URL to a cloud AI tool, the company behind that tool can see it too. If that bothers you, reset the key in the Bark app afterwards.
+
+## ⚡ Install the Skill
+
+First, get your push URL as described above. The Skill adds two things to the URL. One is a set of rules that tells the AI when to call you and what to write ([SKILL.md](SKILL.md)). The other is a sender script that retries and resends after the network comes back.
 
 ### Let your agent install it (recommended)
 

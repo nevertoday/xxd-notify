@@ -4,7 +4,7 @@
 
 **AI 需要你的时候，手机才响一下。**
 
-给 Claude Code、Codex 用的 Bark 通知 Skill：什么时候该叫你、叫你时说清楚要你做什么、网断了也送得到。
+一个 Bark 推送地址，终端、脚本、任何 AI 工具都能叫你。<br>附带的 Skill 是我们给 Claude Code、Codex 做的示范：什么时候该叫你、叫你时说清楚要你做什么、网断了也送得到。
 
 <strong>简体中文</strong> · <a href="README.en.md">English</a>
 
@@ -21,7 +21,8 @@
 </p>
 
 <p align="center">
-  <a href="#-安装">安装</a> ·
+  <a href="#-不装-skill-也能用">不装 Skill 也能用</a> ·
+  <a href="#-安装-skill">安装 Skill</a> ·
   <a href="#-它什么时候会响">什么时候响</a> ·
   <a href="#-一条好通知长什么样">好通知</a> ·
   <a href="#-用法">用法</a> ·
@@ -49,9 +50,95 @@
 | 网断了 | — | 这条就没了 | 重试、Mac 本机先弹、网好了补发 |
 | 体积 | — | — | 一个 Python 文件，零依赖 |
 
-## ⚡ 安装
+## 🔑 不装 Skill 也能用
 
-**先在 iPhone 上装 [Bark](https://github.com/Finb/Bark)**（App Store 搜「Bark」），打开后复制里面的推送地址。
+xxd-notify 的底子是 Bark。手机上装好 Bark，你就有了一个推送地址，往这个地址发一个请求，手机就响。浏览器、终端、脚本、定时任务、快捷指令、任何能打开链接的 AI 工具，都能发这个请求。
+
+后面的 Skill 只是我们自己的一种用法：教 Claude Code 和 Codex 什么时候该叫你、通知里写什么。你可以不装它，拿着地址自己组合。
+
+### 拿到推送地址
+
+1. 在 iPhone 上装 [Bark](https://github.com/Finb/Bark)，App Store 搜「Bark」。
+2. 打开 App，复制首页的推送地址，长这样：`https://api.day.app/你的Key/`。
+
+> [!WARNING]
+> 把这个地址当密码收好。拿到它的人能往你手机推通知，但看不到你的任何东西。泄露了就在 Bark App 里重置 Key。
+
+### 最简单的一条
+
+在浏览器里打开下面这个链接，手机就会响：
+
+```text
+https://api.day.app/你的Key/测试跑完了/12个全部通过
+```
+
+终端里用 curl 发，可以在问号后面加参数：
+
+```bash
+curl "https://api.day.app/你的Key/测试跑完了/12个全部通过?group=AI任务&sound=bell"
+```
+
+正文里有空格、换行或特殊符号时，改用 POST 发 JSON，不用自己转码：
+
+```bash
+curl -X POST https://api.day.app/push \
+  -H 'Content-Type: application/json; charset=utf-8' \
+  -d '{"device_key":"你的Key","title":"要你选方案","body":"A 放顶栏（推荐）\nB 放底部","level":"timeSensitive"}'
+```
+
+常用的参数在 GET 链接和 JSON 里名字一样：
+
+| 参数 | 作用 |
+|---|---|
+| `level` | `active` 普通提醒（默认）；`timeSensitive` 专注模式下也会显示；`passive` 只进通知列表，不亮屏；`critical` 静音也响，要先在 Bark 里授权「重要警告」 |
+| `sound` | 铃声名，比如 `bell`、`minuet`，Bark 里能试听 |
+| `call` | 传 `1` 时铃声连着响 30 秒。要响得更久，就连发几条，Bark 会一条接一条地放 |
+| `group` | 通知列表里的分组 |
+| `url` | 点开通知时打开的网页 |
+| `icon` | 通知图标的图片地址 |
+
+全部参数见 [Bark 的参数说明](https://bark.day.app/#/params)。
+
+### 随手组合
+
+- **长命令跑完叫你**：`npm test && curl -s "https://api.day.app/你的Key/测试通过" || curl -s "https://api.day.app/你的Key/测试挂了"`。
+- **定时任务**：cron、launchd、GitHub Actions 的最后一步加一行 curl。在 GitHub Actions 里，把地址存成 Secret，别写进 workflow 文件。
+- **快捷指令**：iPhone 或 Mac 的快捷指令里，用「获取 URL 内容」打开推送地址。
+- **自己的程序**：任何语言发一个 HTTP 请求就行。Python 只要标准库：
+
+```python
+import json, urllib.request
+data = json.dumps({"device_key": "你的Key", "title": "备份完成", "body": "共 3.2G"}).encode()
+urllib.request.urlopen(urllib.request.Request("https://api.day.app/push", data, {"Content-Type": "application/json"}))
+```
+
+### 在别的 AI 工具里用
+
+支持 MCP 的工具，可以直接接 Bark 官方的 MCP 地址，AI 就多了一个「推通知」的工具。在 Claude Code 里是这一行：
+
+```bash
+claude mcp add bark --transport http https://api.day.app/mcp/你的Key
+```
+
+Cursor、VS Code 等工具在各自的 MCP 设置里填 `https://api.day.app/mcp/你的Key`。
+
+不支持 MCP 的工具，只要它能打开链接或者发网络请求，就能用推送地址。Muse、Grok Bot 这类在网页或 App 里聊天的 AI 也算。
+
+Skill 真正管的就两件事：什么时候叫你，叫你时写什么。这两件事写成几句话，放进任何 AI 工具的规则或自定义指令里一样管用，比如 Cursor 的 Rules、Codex 的 `AGENTS.md`、Claude Code 的 `CLAUDE.md`，或者聊天工具的自定义指令。可以从这一段改起：
+
+```text
+需要我拍板（选方案、要花钱、删数据、给真实用户发消息）、任务失败、或者做完的时候，
+用 Bark 推一条通知给我：打开 https://api.day.app/<我的Key>/<标题>/<正文>。
+标题一句话说结论，正文写清楚要我做什么、推荐哪个、去哪里看。
+其余时候不要推，同一件事只推一次。不要把这个地址写进代码、日志或回复里。
+```
+
+> [!NOTE]
+> 把地址交给云端的 AI 工具，那家公司也就看得到它。介意的话，用完在 Bark App 里重置 Key。
+
+## ⚡ 安装 Skill
+
+先照上面拿到推送地址。Skill 在推送地址上加了两样东西：一份告诉 AI 什么时候该叫你、通知里写什么的规则（[SKILL.md](SKILL.md)），和一个会重试、断网后补发的发送脚本。
 
 ### 让 AI 帮你装（推荐）
 
